@@ -1,0 +1,8 @@
+F:/fpga/fpga-notes/A001.2.led_breath/sim/tb/tb_led_breath.v {1 {vlog -work work -vopt -stats=none F:/fpga/fpga-notes/A001.2.led_breath/sim/tb/tb_led_breath.v
+Model Technology ModelSim SE-64 vlog 2020.4 Compiler 2020.10 Oct 13 2020
+-- Compiling module tb_led_breath
+
+Top level modules:
+	tb_led_breath
+
+} {} {}}
