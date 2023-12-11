@@ -1,0 +1,76 @@
+m255
+K4
+z2
+!s11f vlog 2020.4 2020.10, Oct 13 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dD:/Software/modeltech64_2020.4/examples
+T_opt
+!s110 1702307099
+VQ;;@fM<V2]g3Ka@jH[1cm1
+Z1 04 13 4 work tb_led_breath fast 0
+=1-5081407655e1-6577251a-360-e1c
+o-quiet -auto_acc_if_foreign -work work
+Z2 tCvgOpt 0
+n@_opt
+Z3 OL;O;2020.4;71
+R0
+T_opt1
+!s110 1702307127
+Vz3C6iQ3VU`mmE6[aPU61F2
+R1
+=1-5081407655e1-65772537-180-ca4
+o-quiet -auto_acc_if_foreign -work work +acc
+R2
+n@_opt1
+R3
+vled_breath
+Z4 !s110 1702307091
+!i10b 1
+!s100 jN2A=OQ?o<UCoI9P4mg;=1
+Z5 !s11b Dg1SIo80bB@j0V0VzS_@n1
+IDmFCZ=X<iX4hk:GBW2d6d0
+Z6 dF:/fpga/fpga-notes/A001.2.led_breath/sim
+w1702307088
+8F:/fpga/fpga-notes/A001.2.led_breath/rtl/led_breath.v
+FF:/fpga/fpga-notes/A001.2.led_breath/rtl/led_breath.v
+!i122 64
+L0 3 56
+Z7 VDg1SIo80bB@j0V0VzS_@n1
+Z8 OL;L;2020.4;71
+r1
+!s85 0
+31
+Z9 !s108 1702307091.000000
+!s107 F:/fpga/fpga-notes/A001.2.led_breath/rtl/led_breath.v|
+!s90 -reportprogress|300|-work|work|-vopt|-stats=none|F:/fpga/fpga-notes/A001.2.led_breath/rtl/led_breath.v|
+!i113 0
+Z10 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R2
+vtb_led_breath
+R4
+!i10b 1
+!s100 olMAnjaUhg;:45:1RTf2I2
+R5
+I[U@nbK;4P0N>Q<bV2Da;e2
+R6
+w1702302804
+8F:/fpga/fpga-notes/A001.2.led_breath/sim/tb/tb_led_breath.v
+FF:/fpga/fpga-notes/A001.2.led_breath/sim/tb/tb_led_breath.v
+!i122 65
+L0 3 30
+R7
+R8
+r1
+!s85 0
+31
+R9
+!s107 F:/fpga/fpga-notes/A001.2.led_breath/sim/tb/tb_led_breath.v|
+!s90 -reportprogress|300|-work|work|-vopt|-stats=none|F:/fpga/fpga-notes/A001.2.led_breath/sim/tb/tb_led_breath.v|
+!i113 0
+R10
+R2

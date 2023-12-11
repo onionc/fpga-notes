@@ -1,0 +1,91 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x2C9D506E2C9D506E",
+      "device": "xc7z010clg400-1",
+      "name": "design_1",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2019.2",
+      "validated": "true"
+    },
+    "design_tree": {
+      "processing_system7_0": "",
+      "led_breath_0": ""
+    },
+    "ports": {
+      "led_0": {
+        "direction": "O"
+      }
+    },
+    "components": {
+      "processing_system7_0": {
+        "vlnv": "xilinx.com:ip:processing_system7:5.5",
+        "xci_name": "design_1_processing_system7_0_0",
+        "parameters": {
+          "PCW_FPGA_FCLK0_ENABLE": {
+            "value": "1"
+          },
+          "PCW_USE_M_AXI_GP0": {
+            "value": "0"
+          }
+        }
+      },
+      "led_breath_0": {
+        "vlnv": "xilinx.com:module_ref:led_breath:1.0",
+        "xci_name": "design_1_led_breath_0_0",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "led_breath",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "s_clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "s_rst",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "design_1_processing_system7_0_0_FCLK_CLK0",
+                "value_src": "default_prop"
+              },
+              "FREQ_HZ": {
+                "value": "50000000",
+                "value_src": "user_prop"
+              }
+            }
+          },
+          "s_rst": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "led": {
+            "direction": "O"
+          }
+        }
+      }
+    },
+    "nets": {
+      "processing_system7_0_FCLK_CLK0": {
+        "ports": [
+          "processing_system7_0/FCLK_CLK0",
+          "led_breath_0/s_clk"
+        ]
+      },
+      "processing_system7_0_FCLK_RESET0_N": {
+        "ports": [
+          "processing_system7_0/FCLK_RESET0_N",
+          "led_breath_0/s_rst"
+        ]
+      },
+      "led_breath_0_led": {
+        "ports": [
+          "led_breath_0/led",
+          "led_0"
+        ]
+      }
+    }
+  }
+}
