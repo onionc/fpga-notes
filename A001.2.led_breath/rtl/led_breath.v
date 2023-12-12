@@ -8,17 +8,18 @@ module led_breath(
 
 
 /*
-localparam DELAY_1us = 'd33;
+localparam DELAY_1us = 'd3;
 localparam K = 'd10;
 */
-localparam DELAY_1us = 'd33_333;
+
+localparam DELAY_1us = 'd33;
 localparam K = 'd1000;
 
-reg [7:0] cnt;
-reg [ 9:1] cnt_1us; // 1us 好和1ms计数作对比，辅助pwm
-reg [ 9:1] cnt_1ms;
+reg [ 6:0] cnt;
+reg [ 9:0] cnt_1us; // 1us 好和1ms计数作对比，产生pwm
+reg [ 9:0] cnt_1ms;
 
-// 1ms 计时
+// 1us 计时
 always @(posedge s_clk or negedge s_rst) begin
     if(s_rst == 1'b0) 
         cnt = 0;
@@ -52,7 +53,9 @@ end
 always @(posedge s_clk or negedge s_rst) begin
     if(s_rst == 1'b0)
         led <= 1'b1;
-    else if(cnt_1ms < cnt_1us)
+    else if(cnt_1ms == 0)
+        led <= 1'b1;
+    else if(cnt_1ms >= cnt_1us)
         led <= 1'b0;
     else
         led <= 1'b1;
