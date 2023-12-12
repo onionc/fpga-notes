@@ -3,7 +3,7 @@
    "Default View_ScaleFactor":"1.25",
    "Default View_TopLeft":"-46,-18",
    "ExpandedHierarchyInLayout":"",
-   "guistr":"# # String gsaved with Nlview 7.0.21  2019-05-29 bk=1.5064 VDI=41 GEI=36 GUI=JA:9.0 non-TLS-threadsafe
+   "guistr":"# # String gsaved with Nlview 7.0.21  2019-05-29 bk=1.5064 VDI=41 GEI=36 GUI=JA:9.0 non-TLS
 #  -string -flagsOSRD
 preplace port led_0 -pg 1 -lvl 3 -x 670 -y 110 -defaultsOSRD
 preplace inst processing_system7_0 -pg 1 -lvl 1 -x 160 -y 90 -defaultsOSRD
@@ -15,4 +15,4 @@ levelinfo -pg 1 0 160 410 670
 pagesize -pg 1 -db -bbox -sgen 0 -30 760 180
 "
 }
-
+0
