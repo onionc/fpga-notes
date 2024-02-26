@@ -1035,6 +1035,9 @@
           },
           "PCW_WDT_PERIPHERAL_ENABLE": {
             "value": "0"
+          },
+          "preset": {
+            "value": "None"
           }
         }
       },
@@ -1060,7 +1063,7 @@
                 "value_src": "default_prop"
               },
               "FREQ_HZ": {
-                "value": "50000000",
+                "value": "5e+07",
                 "value_src": "user_prop"
               }
             }
