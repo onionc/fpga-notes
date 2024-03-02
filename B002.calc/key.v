@@ -14,7 +14,9 @@ module key(
 
 // 系统时钟 50M，一个时钟周期是20ns
 // 消抖时间 20ms = 20_000_000 / 20 = 1_000_000周期
-parameter CNT_MAX = 20'd1_000_000;
+// 系统时钟 12M，一个时钟周期是83ns
+// 消抖时间 20ms = 20_000_000/83=240964周期
+parameter CNT_MAX = 20'd240964;
 //parameter CNT_MAX = 20'd200;
 
 reg [19:0] cnt;
@@ -60,8 +62,8 @@ reg key_flag2; // 按键状态变化，key_flag2 比 key_flag晚一个周期
 // 消抖后的值
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n) begin
-        key_flag <= 1'b0;
-        key_flag2 <= 1'b0;
+        key_flag <= 1'b1;
+        key_flag2 <= 1'b1;
     end
     else if(cnt == 20'd1) begin
         key_flag <= key_d1;
