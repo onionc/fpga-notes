@@ -31,7 +31,7 @@ localparam	LOW = 1'b0;
 localparam	HIGH = 1'b1;
 
 // 数码管字库
-reg [7:0] seg [9:0]; // seg[10] 每个里面有8位
+reg [7:0] seg [15:0]; // seg[10] 每个里面有8位
 
 // 初始化
 initial begin
@@ -45,6 +45,12 @@ initial begin
     seg[7]	=	8'h07;   // 7
     seg[8]	=	8'h7f;   // 8
     seg[9]	=	8'h6f;   // 9
+	seg[10]	=	8'h77;   //  A
+    seg[11]	=	8'h7c;   //  b
+    seg[12]	=	8'h39;   //  C
+    seg[13]	=	8'h5e;   //  d
+    seg[14]	=	8'h79;   //  E
+    seg[15]	=	8'h71;   //  F
 
 end
 
