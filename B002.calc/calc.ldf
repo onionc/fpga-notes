@@ -2,21 +2,18 @@
 <BaliProject version="3.2" title="calc" device="LCMXO2-4000HC-5MG132C" default_implementation="impl1">
     <Options/>
     <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">
-        <Options def_top="top" top="top"/>
-        <Source name="led_segment.v" type="Verilog" type_short="Verilog">
-            <Options/>
-        </Source>
-        <Source name="key.v" type="Verilog" type_short="Verilog">
-            <Options/>
-        </Source>
-        <Source name="top.v" type="Verilog" type_short="Verilog">
-            <Options top_module="top"/>
-        </Source>
+        <Options def_top="key" top="calc"/>
         <Source name="rtl/keyboard.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="aa/aa.spf" type="Simulation Project File" type_short="SPF">
+        <Source name="rtl/led_segment.v" type="Verilog" type_short="Verilog">
             <Options/>
+        </Source>
+        <Source name="rtl/key.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="rtl/calc.v" type="Verilog" type_short="Verilog">
+            <Options top_module="calc"/>
         </Source>
         <Source name="calc.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
