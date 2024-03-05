@@ -1,4 +1,4 @@
-module top(
+module top_test(
 	input clk,
 	input rst_n,
 	
@@ -9,10 +9,17 @@ module top(
 	
 	// keyboard
     input [3:0] col,
-    output  [3:0] row
+    output  [3:0] row,
+
+	// key 
+	input key,
+	output led0
 );
+
+// 数码管配置
 /* synthesis syn_force_pads = 1 */
 reg	[3:0] seg_data_1;		// seg1 数码管要显示的数据
+/*
 wire	[3:0]	seg_data_2;		// seg2
 wire	[3:0]	seg_data_3;		// seg3
 wire	[3:0]	seg_data_4;		// seg4
@@ -22,6 +29,7 @@ wire	[3:0]	seg_data_7;		// seg7
 wire	[3:0]	seg_data_8;		// seg8
 wire	[7:0]	seg_data_en;	// 数码管数据使能[msb seg8 ~ lsb seg1]
 wire	[7:0]	seg_dot_en;		// 数码管小数点使能
+*/
 /*
 assign seg_data_1 = 4'd1;
 assign seg_data_2 = 4'd2;
@@ -35,6 +43,8 @@ assign seg_data_8 = 4'd0;
 assign seg_data_en = 8'h1;
 assign seg_dot_en = 8'h00;
 
+
+// 矩阵键盘
 wire [15:0] key_out;
 wire [15:0] key_pulse;
 keyboard keyboard_inst(
@@ -72,7 +82,8 @@ always@(posedge clk or negedge rst_n) begin
 		endcase
 	end
 end
- 
+
+// 数码管
 led_segment inst(
 	.clk(clk),
     .rst_n(rst_n),
@@ -89,6 +100,14 @@ led_segment inst(
     .rclk_out(rclk_out),
     .sclk_out(sclk_out),
     .sdio_out(sdio_out)
+);
+
+// 轻触按键
+key key_inst(
+	.clk(clk),
+	.rst_n(rst_n),
+	.key1(key),
+	.led0(led0)
 );
 
 

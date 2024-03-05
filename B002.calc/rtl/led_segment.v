@@ -1,17 +1,20 @@
 // led 数码管显示
 
-module led_segment(
+
+
+module led_segment 
+(
 
 	input			clk,			// 系统时钟
 	input			rst_n,			// 系统复位
-	input	[3:0]	seg_data_1,		// seg1 数码管要显示的数据
-	input	[3:0]	seg_data_2,		// seg2
-	input	[3:0]	seg_data_3,		// seg3
-	input	[3:0]	seg_data_4,		// seg4
-	input	[3:0]	seg_data_5,		// seg5
-	input	[3:0]	seg_data_6,		// seg6
-	input	[3:0]	seg_data_7,		// seg7
-	input	[3:0]	seg_data_8,		// seg8
+	input	[4:0]	seg_data_1,		// seg1 数码管要显示的数据
+	input	[4:0]	seg_data_2,		// seg2
+	input	[4:0]	seg_data_3,		// seg3
+	input	[4:0]	seg_data_4,		// seg4
+	input	[4:0]	seg_data_5,		// seg5
+	input	[4:0]	seg_data_6,		// seg6
+	input	[4:0]	seg_data_7,		// seg7
+	input	[4:0]	seg_data_8,		// seg8
 	input	[7:0]	seg_data_en,	// 数码管数据使能[msb seg8 ~ lsb seg1]
 	input	[7:0]	seg_dot_en,		// 数码管小数点使能
 	
@@ -31,7 +34,7 @@ localparam	LOW = 1'b0;
 localparam	HIGH = 1'b1;
 
 // 数码管字库
-reg [7:0] seg [15:0]; // seg[10] 每个里面有8位
+reg [7:0] seg [17:0]; // seg 每个里面有8位
 
 // 初始化
 initial begin
@@ -45,13 +48,15 @@ initial begin
     seg[7]	=	8'h07;   // 7
     seg[8]	=	8'h7f;   // 8
     seg[9]	=	8'h6f;   // 9
-	seg[10]	=	8'h77;   //  A
-    seg[11]	=	8'h7c;   //  b
-    seg[12]	=	8'h39;   //  C
-    seg[13]	=	8'h5e;   //  d
-    seg[14]	=	8'h79;   //  E
-    seg[15]	=	8'h71;   //  F
-
+	seg[10] =   8'h46;   // + 的左半部分
+	seg[11] =   8'h70;   // + 的右半部分
+    seg[12]	=	8'h40;   // -
+    seg[13]	=	8'h76;   // x
+    seg[14]	=	8'h49;   // /
+    seg[15]	=	8'h79;   // E
+    seg[16]	=	8'h00;   // 空
+	seg[17] =   8'h73;   // R
+	seg[18] =   8'h72;   // =
 end
 
 // 计数器对系统时钟进行计数
