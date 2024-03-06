@@ -158,25 +158,25 @@ always@(posedge clk or negedge rst_n) begin
 end
 
 // 状态机第二段：使用按键值判断下一个状态（状态转移）
-
 always @(*) begin
+//next_st <=  curr_st;
 	case(curr_st)
 		S00: begin // 只可以输入数字，第一个数字的第一位
-			if((key_value < 4'ha) && key_pulse3>0 ) begin  // 修改2 pulse>0
+			if((key_value < 4'ha) && (key_pulse2>0) ) begin
 				
 				//key_value2 = 4'h2;
-				//v11 <= key_value; 
+				//v11 <= key_value;
 				//v111 = 5'd2;
 				next_st = S11;
 			end else 
 				next_st = S00;
 		end
 		S11: begin  // 可以输入数字第二位或者运算符
-			if((key_value < 4'ha) && key_pulse3>0 ) begin
+			if((key_value < 4'ha) && (key_pulse2>0) ) begin
 				
 				//v12 = key_value;
 				next_st = S12;
-			end else if((key_value >= 4'ha) && (key_value <= 4'hd)) begin
+			end else if((key_value >= 4'ha) && (key_value <= 4'hd) && (key_pulse2>0)  ) begin
 				next_st = S_OP;
 				//op = key_value;
 			end else 
@@ -185,33 +185,30 @@ always @(*) begin
 		end
 
 		S12: begin // 只可以输入运算符
-			if((key_value >= 4'ha) && (key_value <= 4'hd)) begin
+			if((key_value >= 4'ha) && (key_value <= 4'hd) && (key_pulse2>0)) begin
 				next_st = S_OP;
-				op = key_value;
 			end else 
 				next_st = S12;
 		end
 
 		S_OP: begin // 可以输入第二数字的第一位
-		  	if(key_value < 4'ha) begin
+		  	if((key_value < 4'ha) && (key_pulse2>0)) begin
 				next_st = S21;
-				v21 = key_value;
 			end else 
 				next_st = S_OP;
 		end
 
 		S21: begin  // 可以输入数字第二位或者等号
-			if(key_value < 4'ha) begin
+			if((key_value < 4'ha) && (key_pulse2>0)) begin
 				next_st = S22;
-				v22 = key_value;
-			end else if(key_value == 4'he) begin
+			end else if((key_value == 4'he) && (key_pulse2>0)) begin
 				next_st = S_EQ;
 			end else 
 				next_st = S21;
 		end
 
 		S22: begin  // 只可以输入等号
-			if(key_value == 4'he) begin
+			if((key_value == 4'he) && (key_pulse2>0)) begin
 				next_st = S_EQ;
 			end else 
 				next_st = S22;
@@ -229,8 +226,16 @@ always @(*) begin
 			next_st = S00;
 	endcase
 end
+
 reg [4:0] seg_data_1;
 reg [4:0] seg_data_2;
+reg [4:0] seg_data_3;
+reg [4:0] seg_data_4;
+reg [4:0] seg_data_5;
+reg [4:0] seg_data_6;
+reg [4:0] seg_data_7;
+reg [4:0] seg_data_8;
+
 // 状态机第三段：描述状态输出
 always @(posedge clk or negedge rst_n) begin
 	if(!rst_n) begin
@@ -240,17 +245,54 @@ always @(posedge clk or negedge rst_n) begin
 		
 	end else begin
 
-			if(next_st == S11) begin // 修改3 next_st
-				
-				//v111 <= v11;
-				seg_data_1 <= key_value;
-				//seg_data_1 <= 5'd3;
-				// 清除其他数据
-				
+		if(next_st == S11) begin
 
-			end else if(next_st == S12)
-				seg_data_2 <= key_value;
+			seg_data_1 <= key_value;
+			
 
+		end else if(next_st == S12) begin
+			seg_data_2 <= key_value;
+		end else if(next_st == S_OP) begin
+			op <= key_value;
+			case(op)
+				4'ha: begin // +
+					seg_data_4 <= 5'd10;
+					//seg_data_5 <= 5'd11;
+					seg_data_5 <= 5'd12;
+				end
+				4'hb: begin // -
+					seg_data_4 <= 5'd12;
+					seg_data_5 <= 5'd16;
+				end
+				4'hc: begin // *
+					seg_data_4 <= 5'd13;
+					seg_data_5 <= 5'd16;
+				end
+				4'hd: begin
+					seg_data_4 <= 5'd14;
+					seg_data_5 <= 5'd16;
+				end
+				default: begin
+					seg_data_4 <= 5'd15;
+					seg_data_5 <= 5'd15;
+				end
+			endcase
+		end else if(next_st == S21) begin
+			seg_data_6 <= key_value;
+			
+		end else if(next_st == S22) begin
+			seg_data_7 <= key_value;
+
+			
+		end else if(next_st == S_EQ) begin
+			seg_data_8 <= 5'd18;
+			seg_data_8 <= 5'd18;
+		end else if(next_st == S_ERR) begin
+			// ERR
+			seg_data_6 <= 5'd15;
+			seg_data_7 <= 5'd17;
+			seg_data_8 <= 5'd17;
+		end
 			
 	end
 
