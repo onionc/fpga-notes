@@ -34,7 +34,7 @@ localparam	LOW = 1'b0;
 localparam	HIGH = 1'b1;
 
 // 数码管字库
-reg [7:0] seg [17:0]; // seg 每个里面有8位
+reg [7:0] seg [18:0]; // seg 每个里面有8位
 
 // 初始化
 initial begin
@@ -55,8 +55,8 @@ initial begin
     seg[14]	=	8'h49;   // /
     seg[15]	=	8'h79;   // E
     seg[16]	=	8'h00;   // 空
-	seg[17] =   8'h73;   // R
-	seg[18] =   8'h72;   // =
+	seg[17] =   8'h73;   // R （显示是p）
+	seg[18] =   8'h48;   // =
 end
 
 // 计数器对系统时钟进行计数
