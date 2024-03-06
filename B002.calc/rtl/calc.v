@@ -159,19 +159,14 @@ always @(*) begin
 		S00: begin // 只可以输入数字，第一个数字的第一位
 			if((key_value < 4'ha) && (key_pulse2>0) ) begin
 				
-				//key_value2 = 4'h2;
-				
 				next_st = S11;
 			end
 		end
 		S11: begin  // 可以输入数字第二位或者运算符
 			if((key_value < 4'ha) && (key_pulse2>0) ) begin
-				
-				//v12 = key_value;
 				next_st = S12;
 			end else if((key_value >= 4'ha) && (key_value <= 4'hd) && (key_pulse2>0)  ) begin
 				next_st = S_OP;
-				//op = key_value;
 			end 
 
 		end
@@ -238,6 +233,7 @@ always @(posedge clk or negedge rst_n) begin
 			if(key_value < 4'ha) begin // 为避免在S11时按其他键导致问题，这里还需判断一次
 				
 				v11 <= key_value;
+				v12 <= 4'h0; // v12 第二位可能不会被赋值，这里来赋值
 				seg_data_1 <= key_value;
 				
 
@@ -260,42 +256,46 @@ always @(posedge clk or negedge rst_n) begin
 			end
 		end else if(next_st == S_OP) begin
 			if((key_value >= 4'ha) && (key_value <= 4'hd)) begin
-				// seg_data_3 <= 4'd4; seg3 调试用
 				op <= key_value;
+
+				// 最多会用3个数码管显示符号，不用时也置为空，不然可能会是上一次的值
 				case(op)
 					4'ha: begin // +
+						seg_data_3 <= 5'd16;
 						seg_data_4 <= 5'd10;
 						//seg_data_5 <= 5'd11;
 						seg_data_5 <= 5'd12;
 					end
 					4'hb: begin // -
+						seg_data_3 <= 5'd16;
 						seg_data_4 <= 5'd12;
 						seg_data_5 <= 5'd16;
 					end
 					4'hc: begin // *
+						seg_data_3 <= 5'd16;
 						seg_data_4 <= 5'd13;
 						seg_data_5 <= 5'd16;
 					end
-					4'hd: begin
+					4'hd: begin // /
+						seg_data_3 <= 5'd12;
 						seg_data_4 <= 5'd14;
-						seg_data_5 <= 5'd16;
+						seg_data_5 <= 5'd12;
 					end
 					default: begin
+						seg_data_3 <= 5'd16;
 						seg_data_4 <= 5'd15;
 						seg_data_5 <= 5'd15;
 					end
 				endcase
 			end
 		end else if(next_st == S21) begin
-			
 			if(key_value < 4'ha) begin
-				//seg_data_3 <= 4'd6;
 				seg_data_6 <= key_value;
 				v21 <= key_value;
+				v22 <= 4'h0;
 			end
 		end else if(next_st == S22) begin
 			if(key_value < 4'ha) begin
-				//seg_data_3 <= 4'd7;
 				seg_data_7 <= key_value;
 				v22 <= key_value;
 			end
