@@ -114,8 +114,7 @@ reg [15:0] key_pulse3;
 // 更新按键值
 always@(posedge clk or negedge rst_n) begin
 	if(!rst_n) begin
-		key_value <= 4'hf;
-		key_value2<= 4'hf;
+		key_value <= 4'h0;
 		key_pulse2 <= 16'h0000;
 	end else begin
 	/* 矩阵键盘按键分配如下
@@ -147,7 +146,6 @@ always@(posedge clk or negedge rst_n) begin
 		endcase
 		
 		key_pulse2 <= key_pulse; // 延迟一拍，在组合逻辑中使用
-		key_pulse3 <= key_pulse2; // 延迟一拍，在组合逻辑中使用
 	end
 end
 
@@ -155,6 +153,10 @@ end
 
 always @(*) begin
 	next_st =  curr_st; // 这里或者在所有else中赋值
+
+	if((key_value == 4'hf) && (key_pulse2>0) ) begin // 复位
+		next_st = S00;
+	end else
 	case(next_st)
 		S00: begin // 只可以输入数字，第一个数字的第一位
 			if((key_value < 4'ha) && (key_pulse2>0) ) begin
@@ -227,8 +229,19 @@ always @(posedge clk or negedge rst_n) begin
 		seg_data_en <= 8'hff; // 所有数码管有效
 		seg_dot_en <= 8'h00;
 	end else begin
-	
-		if(next_st == S11) begin
+		if(next_st == S00 ) begin // 复位
+			seg_data_1 <= 5'd16; // 16在数码管中置空
+			seg_data_2 <= 5'd16;
+			seg_data_3 <= 5'd16;
+			seg_data_4 <= 5'd16;
+			seg_data_5 <= 5'd16;
+			seg_data_6 <= 5'd16;
+			seg_data_7 <= 5'd16;
+			seg_data_8 <= 5'd16;
+		
+			seg_data_en <= 8'hff; // 所有数码管有效
+			seg_dot_en <= 8'h00;
+		end else if(next_st == S11) begin
 			
 			if(key_value < 4'ha) begin // 为避免在S11时按其他键导致问题，这里还需判断一次
 				
