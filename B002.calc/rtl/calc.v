@@ -146,33 +146,8 @@ always@(posedge clk or negedge rst_n) begin
 			default:  key_value <= key_value;   //无按键按下时保持
 		endcase
 		
-		key_pulse2 <= key_pulse;
-		key_pulse3 <= key_pulse2;
-
-	/*
-		case(key_pulse)
-			16'h0001: begin key_value <= 4'h1; key_value2 <= 4'h1; end // 1
-			16'h0002: begin key_value <= 4'h2; key_value2 <= 4'h2;  end /// 2
-			16'h0004: begin key_value <= 4'h3; key_value2 <= 4'h3;  end /// 3
-			16'h0008: begin key_value <= 4'ha; key_value2 <= 4'ha;  end /// +
-			16'h0010: begin key_value <= 4'h4; key_value2 <= 4'h4;  end /// 4
-			16'h0020: begin key_value <= 4'h5;  end /// 5
-			16'h0040: begin key_value <= 4'h6;  end /// 6
-			16'h0080: begin key_value <= 4'hb;  end /// -
-			16'h0100: begin key_value <= 4'h7;  end /// 7
-            16'h0200: begin key_value <= 4'h8;  end /// 8
-			16'h0400: begin key_value <= 4'h9;  end /// 9
-			16'h0800: begin key_value <= 4'hc;  end /// x
-			16'h1000: begin key_value <= 4'h0;  end /// 0
-			16'h2000: begin key_value <= 4'hf;  end /// C 清除（重置） ，f也做无效值用
-			16'h4000: begin key_value <= 4'he;  end /// =
-			16'h8000: begin key_value <= 4'hd;  end /// /
-			default:  begin key_value <= key_value;   end ///无按键按下时保持
-		endcase
-		//v111 <= key_value;
-		*/
-		
-
+		key_pulse2 <= key_pulse; // 延迟一拍，在组合逻辑中使用
+		key_pulse3 <= key_pulse2; // 延迟一拍，在组合逻辑中使用
 	end
 end
 
@@ -185,7 +160,7 @@ always @(*) begin
 			if((key_value < 4'ha) && (key_pulse2>0) ) begin
 				
 				//key_value2 = 4'h2;
-				v11 <= key_value;
+				//v11 <= key_value;
 				//v111 = 5'd2;
 				next_st = S11;
 			end else 
@@ -194,9 +169,9 @@ always @(*) begin
 		S11: begin  // 可以输入数字第二位或者运算符
 			if((key_value < 4'ha) && (key_pulse2>0) ) begin
 				
-				v12 = key_value;
+				//v12 = key_value;
 				next_st = S12;
-			end else if((key_value >= 4'ha) && (key_value <= 4'hd)) begin
+			end else if((key_value >= 4'ha) && (key_value <= 4'hd) && (key_pulse2>0)  ) begin
 				next_st = S_OP;
 				//op = key_value;
 			end else 
@@ -205,33 +180,30 @@ always @(*) begin
 		end
 
 		S12: begin // 只可以输入运算符
-			if((key_value >= 4'ha) && (key_value <= 4'hd)) begin
+			if((key_value >= 4'ha) && (key_value <= 4'hd) && (key_pulse2>0)) begin
 				next_st = S_OP;
-				op = key_value;
 			end else 
 				next_st = S12;
 		end
 
 		S_OP: begin // 可以输入第二数字的第一位
-		  	if(key_value < 4'ha) begin
+		  	if((key_value < 4'ha) && (key_pulse2>0)) begin
 				next_st = S21;
-				v21 = key_value;
 			end else 
 				next_st = S_OP;
 		end
 
 		S21: begin  // 可以输入数字第二位或者等号
-			if(key_value < 4'ha) begin
+			if((key_value < 4'ha) && (key_pulse2>0)) begin
 				next_st = S22;
-				v22 = key_value;
-			end else if(key_value == 4'he) begin
+			end else if((key_value == 4'he) && (key_pulse2>0)) begin
 				next_st = S_EQ;
 			end else 
 				next_st = S21;
 		end
 
 		S22: begin  // 只可以输入等号
-			if(key_value == 4'he) begin
+			if((key_value == 4'he) && (key_pulse2>0)) begin
 				next_st = S_EQ;
 			end else 
 				next_st = S22;
@@ -271,6 +243,7 @@ always @(posedge clk or negedge rst_n) begin
 		if(next_st == S11) begin
 			
 			//v111 <= v11;
+			v11 <= key_value;
 			seg_data_1 <= key_value;
 			//seg_data_1 <= 5'd3;
 			// 清除其他数据
@@ -284,34 +257,45 @@ always @(posedge clk or negedge rst_n) begin
 			seg_data_8 <= 5'd16;
 
 		end else if(next_st == S12) begin
+			v12 <= key_value;
+
 			seg_data_2 <= key_value;
-		end else if(curr_st == S_OP) begin
+		end else if(next_st == S_OP) begin
+			op <= key_value;
 			case(op)
 				4'ha: begin // +
 					seg_data_4 <= 5'd10;
-					seg_data_5 <= 5'd11;
+					//seg_data_5 <= 5'd11;
+					seg_data_5 <= 5'd12;
 				end
 				4'hb: begin // -
 					seg_data_4 <= 5'd12;
+					seg_data_5 <= 5'd16;
 				end
 				4'hc: begin // *
 					seg_data_4 <= 5'd13;
+					seg_data_5 <= 5'd16;
 				end
 				4'hd: begin
 					seg_data_4 <= 5'd14;
+					seg_data_5 <= 5'd16;
 				end
 				default: begin
 					seg_data_4 <= 5'd15;
 					seg_data_5 <= 5'd15;
 				end
 			endcase
-		end else if(curr_st == S21) begin
-			seg_data_6 <= v21;
-		end else if(curr_st == S22) begin
-			seg_data_7 <= v22;
-		end else if(curr_st == S_EQ) begin
+		end else if(next_st == S21) begin
+			seg_data_6 <= key_value;
+			v21 <= key_value;
+			
+		end else if(next_st == S22) begin
+			seg_data_7 <= key_value;
+			v22 <= key_value;
+			
+		end else if(next_st == S_EQ) begin
 			seg_data_8 <= 5'd18;
-		end else if(curr_st == S_ERR) begin
+		end else if(next_st == S_ERR) begin
 			// ERR
 			seg_data_6 <= 5'd15;
 			seg_data_7 <= 5'd17;
