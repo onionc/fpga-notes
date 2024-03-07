@@ -94,7 +94,11 @@ reg [3:0] v12; // 操作数1的2位
 reg [3:0] v21; // 操作数2的1位
 reg [3:0] v22; // 操作数2的2位
 reg [3:0] op; // 运算符
-reg [3:0] v111;
+
+reg [7:0] v1; // 操作数1
+reg [7:0] v2; // 操作数2
+
+reg [31:0] v_res; // 结果
 
 
 
@@ -212,6 +216,8 @@ always @(*) begin
 	endcase
 end
 
+
+
 // 状态机第三段：描述状态输出
 always @(posedge clk or negedge rst_n) begin
 	if(!rst_n) begin
@@ -315,7 +321,42 @@ always @(posedge clk or negedge rst_n) begin
 		end else if(next_st == S_EQ) begin
 			if(key_value == 4'he) begin
 				// 计算
-				seg_data_8 <= 5'd18;
+				//seg_data_8 <= 5'd18;
+
+				// 操作数1，默认都正数 v11*10+v12
+				v1 <= {v11, 3'b0} + {v11, 1'b0} + v12;
+				
+				// 操作数2
+				v2 <= {v21, 3'b0} + {v12, 1'b0} + v12;
+				
+				case(op)
+					4'ha: begin
+						v_res <= (v11*10+v12) + (v21*10 + v22);
+					end
+					/*
+					4'hb: begin
+
+					end
+					4'hc: begin
+					end
+					4'hd: begin
+					end
+					*/
+					default:
+						v_res <= 32'd0;
+				endcase
+
+				seg_data_1 <= 5'd18;
+				seg_data_2 <= 5'd16;
+				seg_data_3 <= 5'd16;
+				seg_data_6 <= 5'd16;
+				seg_data_7 <= 5'd16;
+				seg_data_8 <= 5'd16;
+
+				seg_data_3 <= (v_res/100)%10;
+				seg_data_4 <= (v_res/10)%10;
+				seg_data_5 <= v_res%10;
+
 			end
 		end else if(next_st == S_ERR) begin
 			// ERR
