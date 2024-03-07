@@ -11,7 +11,6 @@ module calc_1(
 // 拼接个位v12和十位v11
 always @(posedge clk or negedge rst_n) begin
     v1 <= {v11, 3'b0} + {v11, 1'b0} + v12;
-
 end
 
 // 除法
@@ -24,7 +23,7 @@ reg [6:0] t2;
 
 integer i;
 always @(*) begin
-    A = v2;
+    A = v1;
     R = 8'b0;
     Q = 8'b0;
     B = 8'd10;
@@ -32,7 +31,6 @@ always @(*) begin
     for(i=0; i<=7; i=i+1) begin
         R = {R[6:0], A[7-i]}; // 从A中移一位到R中
         if(R>=B) begin
-            //Q = 8'd1;
             Q[7-i] = 1'b1;
             R = R - B;
             
