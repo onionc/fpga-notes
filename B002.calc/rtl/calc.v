@@ -329,6 +329,7 @@ always @(posedge clk or negedge rst_n) begin
 				// ²Ù×÷Êý2
 				v2 <= {v21, 3'b0} + {v12, 1'b0} + v12;
 				
+				
 				case(op)
 					4'ha: begin
 						v_res <= (v11*10+v12) + (v21*10 + v22);

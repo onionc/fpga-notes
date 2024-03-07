@@ -1,4 +1,4 @@
-// 计算器测试
+// 计算器测试，精简版，用于测试功能
 
 module calc_sample #(
     parameter NUM_FOR_200HZ = 60000 // 200Hz计数，12M/200=60000
