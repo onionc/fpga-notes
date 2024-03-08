@@ -103,8 +103,9 @@ num_split num_split_inst1(
 );
 
 always @(posedge clk) begin
-    v_res <= v1 + v2;
+    v_res <= v1 - v2; // ²âÊÔ¼õ·¨¡¢³ı·¨
 end
+
 
 
 endmodule

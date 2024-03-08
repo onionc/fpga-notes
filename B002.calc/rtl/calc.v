@@ -105,6 +105,8 @@ wire [3:0] v_r1; // 个位
 wire [3:0] v_r2; // 十位
 
 
+reg [7:0] v_res2; // 备用
+
 
 
 // 状态机第一段：同步时序描述状态转移，以及更新按键值
@@ -335,7 +337,7 @@ always @(posedge clk or negedge rst_n) begin
             if(key_value == 4'he) begin
                 // 等号以及其他不用的位
                 seg_data_1 <= 5'd18;
-                seg_data_2 <= 5'd16;
+                
                 seg_data_3 <= 5'd16;
                 seg_data_4 <= 5'd16;
                 seg_data_5 <= 5'd16;
@@ -346,20 +348,37 @@ always @(posedge clk or negedge rst_n) begin
                 // 计算
                 case(op)
                     4'ha: begin
-                        v_res <= v1 + v2;
-                        if(v_res>8'd100) v_res <= v_res-8'd100;
+                        seg_data_2 <= 5'd16; // -号没有
+                        // 简单加法，没有考虑负数问题
+                        v_res2 <= v1 + v2;
+                        if(v_res2>8'd100)  // 超过100当做溢出
+                            v_res <= v_res2-8'd100;
+                        else
+                            v_res <= v_res2;
+                            
                         seg_data_3 <= {0'b0, v_r2};
                         seg_data_4 <= {0'b0, v_r1};
                     end
-                    /*
-                    4'hb: begin
+                    
+                    4'hb: begin 
+                        // 简单减法
+                        v_res <= v1 - v2;
 
+                        if(v_r2[3]==1'b1) begin
+                            seg_data_2 <= 5'd12; 
+                            seg_data_3 <= {0'b0, 0'b0, ~v_r2[2:0]+1};
+                        end else begin
+                            seg_data_2 <= 5'd16; 
+                            seg_data_3 <= {0'b0, v_r2};
+                        end
+
+                        seg_data_4 <= {0'b0, v_r1};
                     end
                     4'hc: begin
                     end
                     4'hd: begin
                     end
-                    */
+                    
                     default:
                         v_res <= 32'd0;
                 endcase
