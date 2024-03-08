@@ -101,8 +101,8 @@ wire [7:0] v2; // 操作数2
 
 reg [7:0] v_res; // 结果，还是只支持8位的结果
 // 计算后将结果再拆分
-wire [3:0] v_r1;
-wire [3:0] v_r2;
+wire [3:0] v_r1; // 个位
+wire [3:0] v_r2; // 十位
 
 
 
@@ -257,12 +257,12 @@ always @(posedge clk or negedge rst_n) begin
             if(key_value < 4'ha) begin // 为避免在S11时按其他键导致问题，这里还需判断一次
                 
                 v11 <= key_value;
-                v12 <= 4'h0; // v12 第二位可能不会被赋值，这里来赋值
-                seg_data_1 <= key_value;
-                
+                v12 <= 4'h0; // v12 十位赋值为0
+
+                seg_data_1 <= 4'h0;
+                seg_data_2 <= key_value;
 
                 // 清除其他数据
-                seg_data_2 <= 5'd16;
                 seg_data_3 <= 5'd16;
                 seg_data_4 <= 5'd16;
                 seg_data_5 <= 5'd16;
@@ -273,9 +273,11 @@ always @(posedge clk or negedge rst_n) begin
             
 
         end else if(next_st == S12) begin
-            if(key_value < 4'ha) begin
-                v12 <= key_value;
+            if(key_value < 4'ha && v12==4'h0) begin // 用v12的值来使下面的逻辑只运行一次，不能运行多次，不然v11==v12
+                v12 <= v11; // 先把个位赋值给十位
+                v11 <= key_value; // 再把新值赋给个位
 
+                seg_data_1 <= v11;
                 seg_data_2 <= key_value;
             end
         end else if(next_st == S_OP) begin
@@ -314,23 +316,29 @@ always @(posedge clk or negedge rst_n) begin
             end
         end else if(next_st == S21) begin
             if(key_value < 4'ha) begin
-                seg_data_6 <= key_value;
                 v21 <= key_value;
                 v22 <= 4'h0;
+
+                seg_data_6 <= 4'h0;
+                seg_data_7 <= key_value;
+
             end
         end else if(next_st == S22) begin
-            if(key_value < 4'ha) begin
+            if(key_value < 4'ha && v22==4'h0) begin
+                v22 <= v21; // 先把个位赋值给十位
+                v21 <= key_value; // 再把新值赋给个位
+
+                seg_data_6 <= v21;
                 seg_data_7 <= key_value;
-                v22 <= key_value;
             end
         end else if(next_st == S_EQ) begin
             if(key_value == 4'he) begin
-				// 等号以及其他不用的位
-				seg_data_1 <= 5'd18;
+                // 等号以及其他不用的位
+                seg_data_1 <= 5'd18;
                 seg_data_2 <= 5'd16;
-				seg_data_3 <= 5'd16;
-				seg_data_4 <= 5'd16;
-				seg_data_5 <= 5'd16;
+                seg_data_3 <= 5'd16;
+                seg_data_4 <= 5'd16;
+                seg_data_5 <= 5'd16;
                 seg_data_6 <= 5'd16;
                 seg_data_7 <= 5'd16;
                 seg_data_8 <= 5'd16;
@@ -339,9 +347,9 @@ always @(posedge clk or negedge rst_n) begin
                 case(op)
                     4'ha: begin
                         v_res <= v1 + v2;
-						if(v_res>8'd100) v_res <= v_res-8'd100;
-                        seg_data_3 <= {0'b0, v_r1};
-                		seg_data_4 <= {0'b0, v_r2};
+                        if(v_res>8'd100) v_res <= v_res-8'd100;
+                        seg_data_3 <= {0'b0, v_r2};
+                        seg_data_4 <= {0'b0, v_r1};
                     end
                     /*
                     4'hb: begin
@@ -371,21 +379,21 @@ end
 
 // 拼接
 num_join num_join_inst1(
-    .v1(v11),
-    .v2(v12),
+    .tens(v12),
+    .ones(v11),
     .vout(v1) 
 );
 num_join num_join_inst2(
-    .v1(v21),
-    .v2(v22),
+    .tens(v22),
+    .ones(v21),
     .vout(v2) 
 );
 
 // 再拆分
 num_split num_split_inst1(
     .v(v_res),
-    .v1(v_r1),
-    .v2(v_r2)
+    .tens(v_r2),
+    .ones(v_r1)
 );
 
 endmodule

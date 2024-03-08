@@ -45,8 +45,8 @@ always #(200) clk = ~clk;
 // 基础测试
 // 将 v1 v2 拼接
 num_join num_join_inst1(
-    .v1(v1),
-    .v2(v2),
+    .tens(v1),
+    .ones(v2),
     .vout(vout)    
 );
 // result: v1=6 v2=7 vout=67
@@ -56,8 +56,8 @@ wire [3:0] v3;
 wire [3:0] v4;
 num_split num_split_inst1(
     .v(vout),
-    .v1(v3),
-    .v2(v4)
+    .tens(v3),
+    .ones(v4)
 );
 // result: vout=67 v3=6 v4=7
 
@@ -85,21 +85,21 @@ calc_mul calc_mul_inst1(
 */
 // 拼接
 num_join num_join_inst1(
-    .v1(v11),
-    .v2(v12),
+    .tens(v11),
+    .ones(v12),
     .vout(v1) 
 );
 num_join num_join_inst2(
-    .v1(v21),
-    .v2(v22),
+    .tens(v21),
+    .ones(v22),
     .vout(v2) 
 );
 
 // 再拆分
 num_split num_split_inst1(
     .v(v_res),
-    .v1(v_r1),
-    .v2(v_r2)
+    .tens(v_r1),
+    .ones(v_r2)
 );
 
 always @(posedge clk) begin
