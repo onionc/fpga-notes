@@ -111,6 +111,7 @@ always @(posedge clk) begin
 end
 */
 
+/*
 // ≤‚ ‘≥˝∑®
 reg [7:0] A;
 reg [7:0] B;
@@ -126,11 +127,7 @@ initial begin
 
     A = -1;
     B = 8'd10;
-
-
 end
-
-
 
 calc_div calc_div_inst_3(
     .A(A),
@@ -139,6 +136,41 @@ calc_div calc_div_inst_3(
     .R(R),
     .neg(neg)
 );
+*/
 
+// ≤‚ ‘≥À∑®
+reg [7:0] A;
+reg [7:0] B;
+wire [15:0] res_mul;
+
+
+initial begin
+    A = 8'd1;
+    B = -10;
+
+    #200
+
+    A = -1;
+    B = 8'd10;
+
+    #200
+    A = 8'd3;
+    B = 8'd4;
+
+    #200
+    A = 8'b0;
+    B = 8'd3;
+
+    #200
+    A = 8'd99;
+    B = 8'd99;
+
+end
+
+calc_mul calc_mul_inst_test(
+    .A(A),
+    .B(B),
+    .out(res_mul)
+);
 
 endmodule
