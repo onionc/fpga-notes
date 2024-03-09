@@ -103,7 +103,7 @@ reg [7:0] v_res; // 结果，还是只支持8位的结果
 // 计算后将结果再拆分
 wire [3:0] v_r1; // 个位
 wire [3:0] v_r2; // 十位
-
+wire neg; // 负号
 
 reg [7:0] v_res2; // 备用
 
@@ -364,14 +364,12 @@ always @(posedge clk or negedge rst_n) begin
                         // 简单减法
                         v_res <= v1 - v2;
 
-                        if(v_r2[3]==1'b1) begin
-                            seg_data_2 <= 5'd12; 
-                            seg_data_3 <= {0'b0, 0'b0, ~v_r2[2:0]+1};
-                        end else begin
-                            seg_data_2 <= 5'd16; 
-                            seg_data_3 <= {0'b0, v_r2};
-                        end
-
+                        if(neg == 1'b1)
+                            seg_data_2 <= 5'd12;
+                        else 
+                            seg_data_2 <= 5'd16;
+                        
+                        seg_data_3 <= {0'b0, v_r2};
                         seg_data_4 <= {0'b0, v_r1};
                     end
                     4'hc: begin
@@ -412,7 +410,8 @@ num_join num_join_inst2(
 num_split num_split_inst1(
     .v(v_res),
     .tens(v_r2),
-    .ones(v_r1)
+    .ones(v_r1),
+    .neg(neg)
 );
 
 endmodule
