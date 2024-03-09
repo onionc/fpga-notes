@@ -24,7 +24,8 @@ reg [7:0] v_res; // 结果，还是只支持8位的结果
 // 计算后将结果再拆分
 wire [3:0] v_r1;
 wire [3:0] v_r2;
-
+wire neg;
+/*
 initial begin
     clk <= 1'b0; 
     rst_n <= 1'b0;
@@ -40,7 +41,7 @@ initial begin
 
 end
 always #(200) clk = ~clk;
-
+*/
 /*
 // 基础测试
 // 将 v1 v2 拼接
@@ -83,6 +84,8 @@ calc_mul calc_mul_inst1(
     v_r1 -> 3
     v_r2 -> 5
 */
+
+/*
 // 拼接
 num_join num_join_inst1(
     .tens(v11),
@@ -100,12 +103,42 @@ num_split num_split_inst1(
     .v(v_res),
     .tens(v_r1),
     .ones(v_r2)
+    .neg(neg)
 );
 
 always @(posedge clk) begin
     v_res <= v1 - v2; // 测试减法、除法
 end
+*/
 
+// 测试除法
+reg [7:0] A;
+reg [7:0] B;
+wire [7:0] Q;
+wire [7:0] R;
+
+
+initial begin
+    A = 8'd1;
+    B = 8'd10;
+
+    #200
+
+    A = -1;
+    B = 8'd10;
+
+
+end
+
+
+
+calc_div calc_div_inst_3(
+    .A(A),
+    .B(B),
+    .Q(Q),
+    .R(R),
+    .neg(neg)
+);
 
 
 endmodule
