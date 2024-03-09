@@ -103,10 +103,19 @@ reg [7:0] v_res; // 结果，还是只支持8位的结果
 // 计算后将结果再拆分
 wire [3:0] v_r1; // 个位
 wire [3:0] v_r2; // 十位
-wire neg; // 负号
+wire neg, neg2, neg3, neg4; // 负号
 
 reg [7:0] v_res2; // 备用
+wire [15:0] v_res_mul; // 乘法的结果
+wire [7:0] Q; // 除法结果：商
+wire [7:0] R; // 除法结果：余数
+reg [7:0] v_r_res; // 除法余数的扩展，乘10，再去计算小数部分
+wire [7:0] Q2; // 除法结果：商2
+wire [7:0] R2; // 除法结果：余数2
 
+// 拆分第2个
+reg [7:0] v_split;
+wire [3:0] v_split_r1, v_split_r2;
 
 
 // 状态机第一段：同步时序描述状态转移，以及更新按键值
@@ -336,20 +345,20 @@ always @(posedge clk or negedge rst_n) begin
         end else if(next_st == S_EQ) begin
             if(key_value == 4'he) begin
                 // 等号以及其他不用的位
-                seg_data_1 <= 5'd18;
-                
-                seg_data_3 <= 5'd16;
-                seg_data_4 <= 5'd16;
-                seg_data_5 <= 5'd16;
+                seg_data_1 <= 5'd18; // 等号
+                seg_data_2 <= 5'd16; // -号
+                seg_data_3 <= 5'd16; // 数值十位
+                seg_data_4 <= 5'd16; // 数值个位
+                seg_data_5 <= 5'd16; // 小数
                 seg_data_6 <= 5'd16;
                 seg_data_7 <= 5'd16;
                 seg_data_8 <= 5'd16;
 
+
                 // 计算
                 case(op)
                     4'ha: begin
-                        seg_data_2 <= 5'd16; // -号没有
-                        // 简单加法，没有考虑负数问题
+                        // 简单加法，没有考虑负数
                         v_res2 <= v1 + v2;
                         if(v_res2>8'd100)  // 超过100当做溢出
                             v_res <= v_res2-8'd100;
@@ -373,8 +382,35 @@ always @(posedge clk or negedge rst_n) begin
                         seg_data_4 <= {0'b0, v_r1};
                     end
                     4'hc: begin
+                        // 乘法，也不支持结果超过8位值（或显示十进制两位）的精度，不然还得扩展除法以及拆分和拼接部分
+
+                        if(v_res_mul>8'd100)  // 超过100当做溢出
+                            v_res <= v_res_mul[7:0]; // 精度原因，暴力截断，可能显示的数值会有问题
+                        else
+                            v_res <= v_res2;
+                        
+                        v_res <= v_res_mul[7:0];
+                        seg_data_3 <= {0'b0, v_r2};
+                        seg_data_4 <= {0'b0, v_r1};
+
                     end
                     4'hd: begin
+                        // 除法
+                        //seg_data_2 <= 5'd16;
+
+                        // 商的显示
+                        v_res <= Q;
+                        seg_data_3 <= {0'b0, v_r2};
+                        seg_data_4 <= {0'b0, v_r1};
+
+                        seg_dot_en <= 8'h08;
+
+                        // 通过余数来计算小数部分
+                        v_r_res <= {1'b0, R[3:0], 3'b0} + R[3:0] + R[3:0];
+                        v_split <= Q2;
+                        seg_data_5 <= {0'b0, v_split_r1};
+
+
                     end
                     
                     default:
@@ -413,5 +449,35 @@ num_split num_split_inst1(
     .ones(v_r1),
     .neg(neg)
 );
+
+// 乘法
+calc_mul calc_mul_inst1(
+    .A(v1),
+    .B(v2),
+    .out(v_res_mul)
+);
+
+// 除法
+calc_div calc_div_inst1(
+    .A(v1),
+    .B(v2),
+    .Q(Q),
+    .R(R),
+    .neg(neg2)
+);
+calc_div calc_div_inst2( // 通过余数计算小数
+    .A(v_r_res),
+    .B(v2),
+    .Q(Q2),
+    .R(R2),
+    .neg(neg3)
+);
+num_split num_split_inst2(
+    .v(v_split),
+    .tens(v_split_r2),
+    .ones(v_split_r1),
+    .neg(neg4)
+);
+
 
 endmodule
