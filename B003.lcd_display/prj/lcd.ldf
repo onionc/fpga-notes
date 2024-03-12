@@ -2,7 +2,25 @@
 <BaliProject version="3.2" title="lcd" device="LCMXO2-4000HC-5MG132C" default_implementation="impl1">
     <Options/>
     <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">
-        <Options/>
+        <Options def_top="top" top="top"/>
+        <Source name="../rtl/top.v" type="Verilog" type_short="Verilog">
+            <Options top_module="top"/>
+        </Source>
+        <Source name="../rtl/screen_driver.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../rtl/spi_master_driver.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../rtl/spi_tft_screen_driver.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../rtl/spi_tft_screen_flush.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../rtl/spi_tft_screen_init.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
         <Source name="lcd.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
         </Source>

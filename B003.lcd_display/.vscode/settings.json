@@ -1,3 +1,5 @@
 {
-    "files.encoding": "gb2312"
+    "files.encoding": "gb2312",
+    "digital-ide.dont-show-again.propose.issue": true,
+    "digital-ide.welcome.show": false
 }
