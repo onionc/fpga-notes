@@ -50,10 +50,11 @@ reg         data_update_cnt;
 reg[15:0]   flush_data_reg;
 
 
-assign flush_data_update_o  = (spi_screen_flush_updte == 1'b1 && data_update_cnt == 1'b1) ? 1'b1 : 1'b0; // 数据刷新中
+assign flush_data_update_o  = (spi_screen_flush_updte == 1'b1 && data_update_cnt == 1'b1) ? 1'b1 : 1'b0; // 数据刷新中，data_update_cnt可以认为是主脉冲的半个周期
 assign flush_addr_width_o   = width_cnt; // 刷新的x坐标
 assign flush_addr_height_o  = height_cnt; // 刷新的y坐标
 
+// 使用 flash_update信号来驱动 data_update_cnt脉冲
 always@(posedge sys_clk or negedge sys_rst_n) begin
     if( sys_rst_n == 1'b0)
         data_update_cnt <= 'd0;

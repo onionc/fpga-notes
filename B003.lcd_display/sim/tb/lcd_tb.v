@@ -28,9 +28,11 @@ module lcd_td();
 
     always #(CLK_CNT/2) clk = ~clk;
 
-    top #(
-        .DELAY_255ms('d20)
-    )top_inst(
+    top#(
+    .SCREEN_WIDTH(32'd3),
+    .SCREEN_HEIGHT(32'd4),
+    .DELAY_255ms(32'd1)
+)top_inst(
         .clk(clk),
         .rst_n(rst_n),
 
