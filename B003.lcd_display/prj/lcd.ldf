@@ -6,19 +6,19 @@
         <Source name="../rtl/top.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
-        <Source name="../rtl/screen_driver.v" type="Verilog" type_short="Verilog">
+        <Source name="../rtl/control.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="../rtl/spi_master_driver.v" type="Verilog" type_short="Verilog">
+        <Source name="../rtl/lcd_init.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="../rtl/spi_tft_screen_driver.v" type="Verilog" type_short="Verilog">
+        <Source name="../rtl/lcd_show_pic.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="../rtl/spi_tft_screen_flush.v" type="Verilog" type_short="Verilog">
+        <Source name="../rtl/lcd_write.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="../rtl/spi_tft_screen_init.v" type="Verilog" type_short="Verilog">
+        <Source name="../rtl/pic_ram.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="lcd.lpf" type="Logic Preference" type_short="LPF">
