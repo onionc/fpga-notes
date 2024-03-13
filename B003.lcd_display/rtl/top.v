@@ -2,6 +2,11 @@
 // lcd 显示图片项目
 
 module top #(
+    //屏幕尺寸
+    parameter   SCREEN_WIDTH  = 32'd320,
+    parameter   SCREEN_HEIGHT = 32'd240,
+    //屏幕显示方向
+    parameter   SCREEN_ORIENT = 2'b00,
 	// 延时，可更改方便调试
     parameter   DELAY_255ms = 32'd255_000 
 )(
@@ -17,11 +22,7 @@ module top #(
     output lcd_blk         // 背光
 );
 
-//屏幕尺寸
-parameter   SCREEN_WIDTH  = 32'd320;
-parameter   SCREEN_HEIGHT = 32'd240;
-//屏幕显示方向
-parameter   SCREEN_ORIENT = 2'b00;
+
 
 
 assign lcd_blk = 1'b1; // 背光常亮
