@@ -16,7 +16,13 @@
 // V1.1     |2023/10/30   |Initial ver
 // --------------------------------------------------------------------
 
-module  top
+module  top #( //驱动lcd时调用
+     parameter   TIME100MS    = 23'd1,  //23'd5000_000  // 一个clk的时间足够
+                 TIME120MS    = 23'd1,  //23'd6000_000  
+                 TIME150MS    = 23'd1,  //23'd7500_000  
+                 TIMES4MAX    = 18'd153_613 ,  //320*240*2+13（设置窗口大小）=153_613   
+                 DATA_IDLE    = 9'b0_0000_0000
+ )
 (
     input           	clk			,
     input           	rst_n		   ,
@@ -83,7 +89,13 @@ control  control_inst
     .en_write               (en_write            )
 );
 
-lcd_init  lcd_init_inst
+lcd_init #(
+    .TIME100MS(TIME100MS),
+    .TIME120MS(TIME120MS),
+    .TIME150MS(TIME150MS),
+    .TIMES4MAX(TIMES4MAX),
+    .DATA_IDLE(DATA_IDLE)
+) lcd_init_inst
 (
     .sys_clk_50MHz(clk		),
     .sys_rst_n    (rst_n	     ),

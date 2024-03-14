@@ -180,7 +180,9 @@ always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
         data <= 9'h000;
     else if(state == STATE1)
+    
         case(cnt_set_windows)
+        /* init中设置过大小了，这里不再设置了。但是为什么计数到10才行，其他的会不刷新
             0 : data <= 9'h02A;
             1 : data <= {1'b1,8'h00};
             2 : data <= {1'b1,8'h00};
@@ -190,10 +192,11 @@ always@(posedge sys_clk or negedge sys_rst_n)
             6 : data <= {1'b1,8'h00};
             7 : data <= {1'b1,8'h00};
             8 : data <= {1'b1,8'h01};
-            9 : data <= {1'b1,8'h3f};
+            9 : data <= {1'b1,8'h3f};*/
             10: data <= 9'h02C;
             default: data <= 9'h000;
         endcase
+        
     else if(state == STATE2 && ((temp & 8'h01) == 'd0))
         if(cnt_wr_color_data[0] == 1'b0 )
             data <= {1'b1,WHITE[15:8]};
