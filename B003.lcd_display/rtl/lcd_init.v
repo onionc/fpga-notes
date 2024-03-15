@@ -220,7 +220,7 @@ always@(posedge sys_clk_50MHz or negedge sys_rst_n)
             'd7:  init_data <= 9'h100;
             'd8:  init_data <= 9'h101;
             'd9:  init_data <= 9'h13f;
-                             
+            // 内存写入
             'd10:  init_data <= 9'h02c;
             
             //填充对应点的颜色
