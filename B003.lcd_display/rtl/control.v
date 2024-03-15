@@ -16,7 +16,7 @@ module  control
     output  reg              en_write      
 );
 
-reg     [1:0]   cnt1;
+reg      cnt1;
 
 always@(posedge sys_clk_50MHz or negedge sys_rst_n)
     if(!sys_rst_n)
@@ -38,21 +38,12 @@ always@(posedge sys_clk_50MHz or negedge sys_rst_n)
     else
         en_write <= en_write;
 
-always@(posedge sys_clk_50MHz or negedge sys_rst_n)
+always@(posedge sys_clk_50MHz or negedge sys_rst_n) begin
     if(!sys_rst_n)
-        cnt1 <= 'd0;
-    else if(show_pic_flag)
-        cnt1 <= 'd0;
-    else if(init_done && cnt1 < 'd3)
-        cnt1 <= cnt1 + 1'b1;
-    else
-        cnt1 <= cnt1;
-        
-always@(posedge sys_clk_50MHz or negedge sys_rst_n)
-    if(!sys_rst_n)
-        show_pic_flag <= 1'b0;
-    else if(cnt1 == 'd2)
-        show_pic_flag <= 1'b1;
-    else
-        show_pic_flag <= 1'b0;        
+        show_pic_flag <= 1'd0;
+    else 
+        show_pic_flag <= init_done ? (~show_pic_flag) : 1'd0;
+end
+
 endmodule
+
