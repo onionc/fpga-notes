@@ -110,7 +110,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
         state1_finish_flag <= 1'b0;
-    else if(cnt_set_windows == 'd10 && the1_wr_done)
+    else if(cnt_set_windows == 'd0 && the1_wr_done)
         state1_finish_flag <= 1'b1;
     else
         state1_finish_flag <= 1'b0;
@@ -182,18 +182,8 @@ always@(posedge sys_clk or negedge sys_rst_n)
     else if(state == STATE1)
     
         case(cnt_set_windows)
-        /* init中设置过大小了，这里不再设置了。但是为什么计数到10才行，其他的会不刷新
-            0 : data <= 9'h02A;
-            1 : data <= {1'b1,8'h00};
-            2 : data <= {1'b1,8'h00};
-            3 : data <= {1'b1,8'h00};
-            4 : data <= {1'b1,8'hef};
-            5 : data <= 9'h02B;
-            6 : data <= {1'b1,8'h00};
-            7 : data <= {1'b1,8'h00};
-            8 : data <= {1'b1,8'h01};
-            9 : data <= {1'b1,8'h3f};*/
-            10: data <= 9'h02C;
+            // init中设置过大小了，这里不再设置了。直接执行内存写入
+            0: data <= 9'h02C;
             default: data <= 9'h000;
         endcase
         
@@ -222,11 +212,5 @@ assign state2_finish_flag = (
 assign show_pic_data = data;
 assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd5) ? 1'b1 : 1'b0;
 assign show_pic_done = (state == DONE) ? 1'b1 : 1'b0;
-/*
-pic_ram pic_ram_u0
-(
-	.address(rom_addr), 
-	.q(rom_q)
-);
-*/
+
 endmodule
