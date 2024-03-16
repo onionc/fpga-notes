@@ -9,9 +9,6 @@ module  control
     input   wire     [8:0]   show_pic_data      ,
     input   wire             en_write_show_pic  ,
 	 input   wire				  show_pic_done,
-    
-	 output  reg             show_pic_flag      ,
-	 
     output  reg      [8:0]   data                ,
     output  reg              en_write      
 );
@@ -38,12 +35,6 @@ always@(posedge sys_clk_50MHz or negedge sys_rst_n)
     else
         en_write <= en_write;
 
-always@(posedge sys_clk_50MHz or negedge sys_rst_n) begin
-    if(!sys_rst_n)
-        show_pic_flag <= 1'd0;
-    else 
-        show_pic_flag <= init_done ? (~show_pic_flag) : 1'd0;
-end
 
 endmodule
 

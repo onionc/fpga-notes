@@ -4,23 +4,23 @@ module lcd_show_pic
     input       wire            sys_clk             ,
     input       wire            sys_rst_n           ,
     input       wire            wr_done             ,
-    input       wire            show_pic_flag       ,   //显示字符标志信号
+    input       wire            init_done       ,   //显示字符标志信号
 
-	 output       reg     [8:0]  rom_addr,
-	 input			 wire    [239:0]   rom_q,
+    output      reg     [8:0]  rom_addr,
+    input       wire    [239:0]   rom_q,
 
     output      wire    [8:0]   show_pic_data       ,   //传输的命令或者数据
-	 output		wire				 show_pic_done,
+    output      wire            show_pic_done,
     output      wire            en_write_show_pic   
 );
 
 //画笔颜色
 parameter   WHITE   = 16'hFFFF,
-            BLACK   = 16'h0000,	  
+            BLACK   = 16'h0000, 
             BLUE    = 16'h001F,  
             BRED    = 16'hF81F,
-            GRED 	  = 16'hFFE0,
-            GBLUE	  = 16'h07FF,
+            GRED    = 16'hFFE0,
+            GBLUE   = 16'h07FF,
             RED     = 16'hF800,
             MAGENTA = 16'hF81F,
             GREEN   = 16'h07E0,
@@ -45,7 +45,6 @@ parameter   DONE   = 4'b1_000;
 reg     [3:0]   state;
 
 //设置显示窗口
-reg             the1_wr_done;
 reg     [3:0]   cnt_set_windows;
 
 //状态STATE1跳转到STATE2的标志信号
@@ -85,32 +84,25 @@ always@(posedge sys_clk or negedge sys_rst_n)
         state <= STATE0;
     else
         case(state)
-            STATE0 : state <= (show_pic_flag) ? STATE1 : STATE0;
+            STATE0 : state <= (init_done) ? STATE1 : STATE0;
             STATE1 : state <= (state1_finish_flag) ? STATE2 : STATE1;
             STATE2 : state <= (state2_finish_flag) ? DONE : STATE2;
             DONE   : state <= STATE0;
         endcase
-//重要//
-always@(posedge sys_clk or negedge sys_rst_n)
-    if(!sys_rst_n) 
-        the1_wr_done <= 1'b0;
-    else if(wr_done)
-        the1_wr_done <= 1'b1;
-    else
-        the1_wr_done <= 1'b0;
+/*
         
 //设置显示窗口计数器
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)  
         cnt_set_windows <= 'd0;
-    else if(state == STATE1 && the1_wr_done)
+    else if(state == STATE1 && wr_done)
         cnt_set_windows <= cnt_set_windows + 1'b1;
-
+*/
 //状态STATE1跳转到STATE2的标志信号
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
         state1_finish_flag <= 1'b0;
-    else if(cnt_set_windows == 'd0 && the1_wr_done)
+    else if((state==STATE1) && wr_done)
         state1_finish_flag <= 1'b1;
     else
         state1_finish_flag <= 1'b0;
@@ -130,31 +122,28 @@ always@(posedge sys_clk or negedge sys_rst_n)
         rom_addr <= 'd0;
     else if(cnt_rom_prepare == 'd1)      
         rom_addr <=  cnt_length_num;
-
+        
 //rom输出数据移位后得到的数据temp
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
         temp <= 'd0;
     else if(cnt_rom_prepare == 'd3)
         temp <= rom_q;
-    else if(state == STATE2 && the1_wr_done)     
+    else if(state == STATE2 && wr_done)     
 			begin
-				if(cnt_wr_color_data[0] == 1)
-					temp <= temp >>1;
-				else
-					temp <= temp;
+        if(cnt_wr_color_data[0] == 1)
+            temp <= temp >>1;
+        else
+            temp <= temp;
 			end
+
 
 
 //长度加1标志信号
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
         length_num_flag <= 1'b0;
-   else if(
-            state == STATE2 && 
-            cnt_wr_color_data == 10'd479 &&
-            the1_wr_done
-           )
+   else if( wr_done && state == STATE2 &&  cnt_wr_color_data == 10'd479 )
        length_num_flag <= 1'b1;
     else
        length_num_flag <= 1'b0;
@@ -172,7 +161,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
         cnt_wr_color_data <= 'd0;
     else if(cnt_rom_prepare == 'd3 || state == DONE)
         cnt_wr_color_data <= 'd0;
-    else if(state == STATE2 && the1_wr_done)
+    else if(state == STATE2 && wr_done)
         cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
         
 //要传输的命令或者数据
@@ -180,13 +169,8 @@ always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
         data <= 9'h000;
     else if(state == STATE1)
-    
-        case(cnt_set_windows)
-            // init中设置过大小了，这里不再设置了。直接执行内存写入
-            0: data <= 9'h02C;
-            default: data <= 9'h000;
-        endcase
-        
+        // init中设置过大小了，这里不再设置了。直接执行内存写入。每次就都默认全屏数据
+        data <= 9'h02C;
     else if(state == STATE2 && ((temp & 8'h01) == 'd0))
         if(cnt_wr_color_data[0] == 1'b0 )
             data <= {1'b1,WHITE[15:8]};
@@ -201,12 +185,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
         data <= data;   
 
 //状态STATE2跳转到DONE的标志信号        
-assign state2_finish_flag = (
-                             (
-                                (cnt_length_num == SIZE_LENGTH_MAX)         
-                             ) &&
-                             length_num_flag
-                            ) ? 1'b1 : 1'b0;
+assign state2_finish_flag = ( (cnt_length_num == SIZE_LENGTH_MAX)  && length_num_flag ) ? 1'b1 : 1'b0;
         
 //输出端口
 assign show_pic_data = data;
