@@ -10,7 +10,9 @@ module lcd_show_pic
 
     output      wire    [8:0]   show_pic_data       ,   //传输的命令或者数据
     output      wire            show_pic_done,
-    output      wire            en_write_show_pic   
+    output      wire            en_write_show_pic ,
+
+    input       wire            recv_flag // 接受数据标志 
 );
 
 //画笔颜色
@@ -57,10 +59,10 @@ reg     [2:0]   cnt_rom_prepare;
 
 //rom的地址
 reg     [8:0]  rom_addr;
-wire    [3200:0]   rom_q;
+wire    [15:0]   rom_q;
 
 //rom输出数据移位后得到的数据temp
-reg     [3200:0]   temp;
+reg     [15:0]   temp;
 
 //长度加1标志信号
 reg             length_num_flag;
@@ -125,6 +127,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
     else if(cnt_rom_prepare == 'd1)      
         rom_addr <=  cnt_length_num;
         
+
 //rom输出数据移位后得到的数据temp
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
