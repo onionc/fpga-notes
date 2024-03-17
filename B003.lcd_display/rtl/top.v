@@ -52,8 +52,6 @@ wire    [8:0]   start_y            ;
 wire    [8:0]   show_pic_data     ;
 wire            en_write_show_pic  ;
 wire            show_char_done     ;  
-wire     [8:0]  rom_addr;
-wire    [239:0]   rom_q;
 
 assign            lcd_blk = 1'b1;
 
@@ -110,16 +108,10 @@ lcd_show_pic  lcd_show_pic_inst
     .sys_rst_n          (rst_n),
     .wr_done            (wr_done),
     .init_done          (init_done), 
-    .rom_addr           (rom_addr), 
-    .rom_q              (rom_q),
     .show_pic_data      (show_pic_data),   
     .en_write_show_pic  (en_write_show_pic)  
 );
 
-pic_ram pic_ram_u0
-(
-    .address(rom_addr), 
-    .q(rom_q)
-);
+
 
 endmodule
