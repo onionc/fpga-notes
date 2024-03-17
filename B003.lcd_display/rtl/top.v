@@ -22,8 +22,8 @@ module  top #( //驱动lcd时调用
                  TIME150MS    = 23'd1,  //23'd7500_000  
                  TIMES4MAX    = 18'd153_613 ,  //320*240*2+13（设置窗口大小）=153_613   
                  DATA_IDLE    = 9'b0_0000_0000,
-                 BPS_PARAM_TX    = 'd1250, // 发送波特率：12M/1250=9600
-                 BPS_PARAM_RX    = 'd1250  // 接收波特率
+                 BPS_PARAM_TX    = 'd12, // 发送波特率：12M/1250=9600
+                 BPS_PARAM_RX    = 'd12  // 接收波特率
  )
 (
     input               clk            ,
@@ -174,7 +174,8 @@ lcd_show_pic  lcd_show_pic_inst
     .init_done          (init_done), 
     .show_pic_data      (show_pic_data),   
     .en_write_show_pic  (en_write_show_pic),
-    .recv_flag          (recv_flag)
+    .recv_flag          (recv_flag),
+    .recv_data          (rx_data)
 );
 
 endmodule

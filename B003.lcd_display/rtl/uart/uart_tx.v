@@ -23,7 +23,7 @@ reg     [9:0]   tx_data_r;
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n)
         bps_en_o <= 1'b0;
-    else if(recv_flag) begin
+    else if(recv_flag && 1'b0) begin
         bps_en_o <= 1'b1;
         tx_data_r <= {1'b1, tx_data, 1'b0};
     end

@@ -12,7 +12,8 @@ module lcd_show_pic
     output      wire            show_pic_done,
     output      wire            en_write_show_pic ,
 
-    input       wire            recv_flag // 接受数据标志 
+    input       wire            recv_flag, // 接受数据标志 
+    input       wire    [7:0]   recv_data // 接收的数据
 );
 
 //画笔颜色
@@ -34,7 +35,8 @@ parameter   WHITE   = 16'hFFFF,
 //****************** Parameter and Internal Signal *******************//
 
 
-parameter   SIZE_WIDTH_MAX = 8'd240;
+//parameter   SIZE_WIDTH_MAX = 8'd240;
+parameter   SIZE_WIDTH_MAX = 8'd20;
 parameter   SIZE_LENGTH_MAX = 9'd320;
 parameter   SIZE_WIDTH2_MAX = {SIZE_WIDTH_MAX, 1'b0} -1;
 
@@ -56,6 +58,7 @@ reg            state1_finish_flag;
 
 //等待rom数据读取完成的计数器
 reg     [2:0]   cnt_rom_prepare;
+// 之前是从0~5计数，读取rom的值，现在变为从串口读数
 
 //rom的地址
 reg     [8:0]  rom_addr;
@@ -113,13 +116,27 @@ always@(posedge sys_clk or negedge sys_rst_n)
 
 //等待rom数据读取完成的计数器
 always@(posedge sys_clk or negedge sys_rst_n)
-    if(!sys_rst_n)  
+    if(!sys_rst_n || length_num_flag)  begin
         cnt_rom_prepare <= 'd0;
-    else if(length_num_flag)
-        cnt_rom_prepare <= 'd0;
-    else if(state == STATE2 && cnt_rom_prepare < 'd5)
-        cnt_rom_prepare <= cnt_rom_prepare + 1'b1;
+        temp <= 16'd0;
+        cnt_wr_color_data <= 'd0;
+    end
+    else if(state == STATE2 && cnt_rom_prepare < 'd2) begin
+        if(recv_flag) begin
+            cnt_rom_prepare <= cnt_rom_prepare + 1'b1;
+            cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
+            if(cnt_rom_prepare == 'd0)
+                temp <= {temp[15:8], recv_data};
+            else if(cnt_rom_prepare == 'd1)
+                temp <= {recv_data, temp[7:0]};
+        end 
         
+            
+    end else if(cnt_rom_prepare >= 'd2)
+        cnt_rom_prepare <= 'd0;
+        
+
+/*
 //rom的地址
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
@@ -140,7 +157,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
         else
             temp <= temp;
 	end
-
+*/
 //长度加1标志信号
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
@@ -154,9 +171,10 @@ always@(posedge sys_clk or negedge sys_rst_n)
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
         cnt_length_num <= 'd0;
-    else if(cnt_length_num < SIZE_LENGTH_MAX-1 && length_num_flag)
+    else if((cnt_length_num < SIZE_LENGTH_MAX-1) && length_num_flag)
         cnt_length_num <= cnt_length_num + 1'b1;
 
+/*
 //点的颜色计数器
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
@@ -165,7 +183,8 @@ always@(posedge sys_clk or negedge sys_rst_n)
         cnt_wr_color_data <= 'd0;
     else if(state == STATE2 && wr_done)
         cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
-        
+*/
+
 //要传输的命令或者数据
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
@@ -175,10 +194,10 @@ always@(posedge sys_clk or negedge sys_rst_n)
         data <= 9'h02C;
     else if(state == STATE2)
         if(cnt_wr_color_data[0] == 1'b0 )
-            data <= {1'b1,temp[7:0]};
-
+data <= {1'b1,temp[15:8]};
         else
-            data <= {1'b1,temp[15:8]};
+            data <= {1'b1,temp[7:0]};
+            
 
     else
         data <= data;   
@@ -188,7 +207,7 @@ assign state2_finish_flag = ( (cnt_length_num == SIZE_LENGTH_MAX-1)  && length_n
         
 //输出端口
 assign show_pic_data = data;
-assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd5) ? 1'b1 : 1'b0;
+assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd2) ? 1'b1 : 1'b0;
 assign show_pic_done = (state == DONE) ? 1'b1 : 1'b0;
 
 
