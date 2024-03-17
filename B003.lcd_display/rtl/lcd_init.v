@@ -136,7 +136,7 @@ always@(posedge sys_clk_50MHz or negedge sys_rst_n)
 			7'd2:  init_data <= 9'h100 ; // 00 表示正常方向
             
             7'd3 :  init_data <= 9'h03a ; // 接口像素格式
-            7'd4 :  init_data <= 9'h155 ; // 55 表示 16bit/pixel, 65k RGB
+            7'd4 :  init_data <= 9'h155 ; // 55 表示 16bit/pixel, 65k RGB（16位真彩色）
             
             7'd5 :  init_data <= 9'h0b2 ; // porch 设置，暂时不太懂                    
             7'd6 :  init_data <= 9'h10c ; // porch.1st param                  
