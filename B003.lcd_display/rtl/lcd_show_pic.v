@@ -12,7 +12,7 @@ module lcd_show_pic
     output      wire            show_pic_done,
     output      wire            en_write_show_pic ,
 
-    input       wire            fifo_wcnt, // fifo 数据长度标志
+    input       wire    [10:0]  fifo_wcnt, // fifo 数据长度标志
     output      reg             fifo_rdEn, // 读使能
     input       wire    [7:0]   fifo_data // 接收的数据
 );
@@ -93,7 +93,14 @@ always@(posedge sys_clk or negedge sys_rst_n)
         case(state)
             STATE0 : state <= (init_done) ? STATE1 : STATE0;
             STATE1 : state <= (state1_finish_flag) ? STATE2 : STATE1;
-            STATE2 : state <= (state2_finish_flag) ? DONE : STATE2;
+            STATE2 : begin
+                if(state2_finish_flag)
+                    state <= DONE;
+                else if(cnt_rom_prepare >= 'd6)
+                    state <= STATE1;
+                else
+                    state <= STATE2;
+            end
             DONE   : state <= STATE0;
         endcase
 /*
@@ -125,7 +132,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
         cnt_rom_prepare <= 'd0;
         temp <= 16'heeee;
         cnt_wr_color_data <= 'd0;
-    end else if(state == STATE2 && cnt_rom_prepare < 'd6 && wr_done) begin
+    end else if(state == STATE2 && cnt_rom_prepare <= 'd6) begin
         if(fifo_wcnt >= 'd2) begin
             cnt_rom_prepare <= cnt_rom_prepare + 1'b1;
             case(cnt_rom_prepare)
@@ -145,7 +152,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
             endcase
         end 
             
-    end else if(cnt_rom_prepare >= 'd6)
+    end else if(cnt_rom_prepare >= 'd7)
         cnt_rom_prepare <= 'd0;
         
 
@@ -220,7 +227,7 @@ assign state2_finish_flag = ( (cnt_length_num == SIZE_LENGTH_MAX-1)  && length_n
         
 //输出端口
 assign show_pic_data = data;
-assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd6) ? 1'b1 : 1'b0;
+assign en_write_show_pic = (state == STATE1/* || cnt_rom_prepare == 'd6*/) ? 1'b1 : 1'b0;
 assign show_pic_done = (state == DONE) ? 1'b1 : 1'b0;
 
 

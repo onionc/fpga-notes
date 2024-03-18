@@ -1,7 +1,13 @@
 `timescale 1ns/1ns
 
-module lcd_tb2();
 
+
+module lcd_tb2();
+    
+    // 使用ip核仿真时，需要增加
+    GSR GSR_INST(.GSR(1'b1));
+    PUR PUR_INST(.PUR(1'b1));
+    
     reg clk;
     reg rst_n;
 
@@ -57,8 +63,8 @@ module lcd_tb2();
         .TIME120MS(8'd12),
         .TIME150MS(8'd15),
         .TIMES4MAX(8'd20),
-        .BPS_PARAM_RX('d100),
-        .BPS_PARAM_TX('d100)
+        .BPS_PARAM_RX('d10),
+        .BPS_PARAM_TX('d10)
 
     )top_inst(
         .clk(clk),
