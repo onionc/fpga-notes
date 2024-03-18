@@ -13,7 +13,8 @@ module lcd_show_pic
     output      wire            en_write_show_pic ,
 
     input       wire            fifo_wcnt, // fifo 数据长度标志
-    input       wire    [7:0]   recv_data // 接收的数据
+    output      reg             fifo_rdEn, // 读使能
+    input       wire    [7:0]   fifo_data // 接收的数据
 );
 
 //画笔颜色
@@ -117,24 +118,34 @@ always@(posedge sys_clk or negedge sys_rst_n)
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)  begin
         cnt_rom_prepare <= 'd0;
-        temp <= 16'd0;
+        temp <= 16'heeee;
         cnt_wr_color_data <= 'd0;
+        fifo_rdEn <= 1'b0;
     end else if(length_num_flag) begin
         cnt_rom_prepare <= 'd0;
-        temp <= 16'd0;
+        temp <= 16'heeee;
         cnt_wr_color_data <= 'd0;
-    end else if(state == STATE2 && cnt_rom_prepare < 'd2) begin
-        if(fifo_wcnt > 'd2) begin
+    end else if(state == STATE2 && cnt_rom_prepare < 'd6 && wr_done) begin
+        if(fifo_wcnt >= 'd2) begin
             cnt_rom_prepare <= cnt_rom_prepare + 1'b1;
-            cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
-            if(cnt_rom_prepare == 'd0)
-                temp <= {temp[15:8], recv_data};
-            else if(cnt_rom_prepare == 'd1)
-                temp <= {recv_data, temp[7:0]};
+            case(cnt_rom_prepare)
+                'd0:  fifo_rdEn <= 1'b1;
+                'd1:  fifo_rdEn <= 1'b0;
+                'd2:  begin
+                    temp <=  {temp[15:8], fifo_data};
+                    cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
+                end
+                'd3:  fifo_rdEn <= 1'b1;
+                'd4:  fifo_rdEn <= 1'b0;
+                'd5:  begin
+                    temp <= {fifo_data, temp[7:0]};
+                    cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
+                end
+                default: fifo_rdEn <= 1'b0;
+            endcase
         end 
-        
             
-    end else if(cnt_rom_prepare >= 'd2)
+    end else if(cnt_rom_prepare >= 'd6)
         cnt_rom_prepare <= 'd0;
         
 
@@ -209,7 +220,7 @@ assign state2_finish_flag = ( (cnt_length_num == SIZE_LENGTH_MAX-1)  && length_n
         
 //输出端口
 assign show_pic_data = data;
-assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd2) ? 1'b1 : 1'b0;
+assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd6) ? 1'b1 : 1'b0;
 assign show_pic_done = (state == DONE) ? 1'b1 : 1'b0;
 
 

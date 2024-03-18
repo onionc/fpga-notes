@@ -16,14 +16,14 @@
 // V1.1     |2023/10/30   |Initial ver
 // --------------------------------------------------------------------
 
-module  top #( //驱动lcd时调用
-     parameter   TIME100MS    = 23'd1,  //23'd5000_000  // 一个clk的时间足够
+module  top #( //驱动lcd时调�
+     parameter   TIME100MS    = 23'd1,  //23'd5000_000  // 一个clk的时间足�
                  TIME120MS    = 23'd1,  //23'd6000_000  
                  TIME150MS    = 23'd1,  //23'd7500_000  
                  TIMES4MAX    = 18'd153_613 ,  //320*240*2+13（设置窗口大小）=153_613   
                  DATA_IDLE    = 9'b0_0000_0000,
-                 BPS_PARAM_TX    = 'd12, // 发送波特率：12M/1250=9600
-                 BPS_PARAM_RX    = 'd12  // 接收波特率
+                 BPS_PARAM_TX    = 'd12, // 发送波特率�2M/1250=9600
+                 BPS_PARAM_RX    = 'd12  // 接收波特�
  )
 (
     input               clk            ,
@@ -39,7 +39,7 @@ module  top #( //驱动lcd时调用
 
     // uart
     input               ttl_rx,      // 串口接收信号
-    output              ttl_tx_o    // 串口发送信号
+    output              ttl_tx_o    // 串口发送信�
 
 
 );
@@ -103,13 +103,13 @@ wire fifo_wrEn, fifo_reset, fifo_rpReset, fifo_empty, fifo_almostEmpty, fifo_ful
 wire [7:0] fifo_data;
 wire [10:0] fifo_wcnt, fifo_rcnt;
 
-reg fifo_rdEn;
+wire fifo_rdEn;
 
 /******************* UART start *******************/
 // UART 接受模块配置
 wire    bps_en_rx; // 接收使能
-wire    bps_clk_rx; // 时钟传递
-wire     [7:0]   rx_data; // 接受的数据
+wire    bps_clk_rx; // 时钟传�
+wire     [7:0]   rx_data; // 接受的数�
 
 baud #(
     .BPS_PARAM(BPS_PARAM_RX) // 12M/1250=9600
@@ -129,7 +129,7 @@ uart_rx uart_rx_inst(
     .rx_data(rx_data)
 );
 
-// UART 发送模块配置
+// UART 发送模块配�
 wire    bps_en_tx;
 wire    bps_clk_tx;
 wire recv_flag;
@@ -150,7 +150,7 @@ uart_tx uart_tx_inst(
     .rst_n(rst_n),
     .bps_en_o(bps_en_tx),
     .bps_clk(bps_clk_tx),
-    .tx_data(fifo_wcnt[7:0]),
+    .tx_data(fifo_wcnt),
     .ttl_tx_o(ttl_tx_o),
     .recv_flag(recv_flag)
 );
@@ -163,9 +163,9 @@ uart_tx uart_tx_inst(
 
 
 uart_fifo uart_fifo_inst (.Data(rx_data), .WrClock(clk), .RdClock(clk), .WrEn(recv_flag), .RdEn(fifo_rdEn), 
-    .Reset(fifo_reset), .RPReset(fifo_rpReset), .Q(fifo_data), .WCNT(fifo_wcnt), .RCNT(fifo_rcnt), .Empty(fifo_empty), 
+    .Reset(~rst_n), .RPReset(~rst_n), .Q(fifo_data), .WCNT(fifo_wcnt), .RCNT(fifo_rcnt), .Empty(fifo_empty), 
     .Full(fifo_almostEmpty), .AlmostEmpty(fifo_full), .AlmostFull(fifo_almostFull));
-
+/*
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n)
         fifo_rdEn <= 1'b0;
@@ -180,7 +180,7 @@ always @(posedge clk or negedge rst_n) begin
     end
   
 end 
-
+*/
 /******************* fifo ip end *****************/
 
 control  control_inst
@@ -207,7 +207,7 @@ lcd_show_pic  lcd_show_pic_inst
     .show_pic_data      (show_pic_data),   
     .en_write_show_pic  (en_write_show_pic),
     .fifo_wcnt          (fifo_wcnt),
-    .recv_data          (rx_data)
+    .fifo_rdEn          (fifo_rdEn),
+    .fifo_data          (fifo_data)
 );
-
 endmodule
