@@ -98,8 +98,12 @@ lcd_init #(
     .init_done    (init_done)
 );
 
+// fifo 声明
+wire fifo_wrEn, fifo_reset, fifo_rpReset, fifo_empty, fifo_almostEmpty, fifo_full, fifo_almostFull;
+wire [7:0] fifo_data;
+wire [10:0] fifo_wcnt, fifo_rcnt;
 
-
+reg fifo_rdEn;
 
 /******************* UART start *******************/
 // UART 接受模块配置
@@ -139,17 +143,45 @@ baud #(
     .bps_en(bps_en_tx),
     .bps_clk_o(bps_clk_tx)
 );
+
+
 uart_tx uart_tx_inst(
     .clk(clk),
     .rst_n(rst_n),
     .bps_en_o(bps_en_tx),
     .bps_clk(bps_clk_tx),
-    .tx_data(rx_data),
+    .tx_data(fifo_wcnt[7:0]),
     .ttl_tx_o(ttl_tx_o),
     .recv_flag(recv_flag)
 );
 /******************* UART end   *******************/
 
+
+/******************* fifo ip **********************/
+
+
+
+
+uart_fifo uart_fifo_inst (.Data(rx_data), .WrClock(clk), .RdClock(clk), .WrEn(recv_flag), .RdEn(fifo_rdEn), 
+    .Reset(fifo_reset), .RPReset(fifo_rpReset), .Q(fifo_data), .WCNT(fifo_wcnt), .RCNT(fifo_rcnt), .Empty(fifo_empty), 
+    .Full(fifo_almostEmpty), .AlmostEmpty(fifo_full), .AlmostFull(fifo_almostFull));
+
+always @(posedge clk or negedge rst_n) begin
+    if(!rst_n)
+        fifo_rdEn <= 1'b0;
+    else begin
+
+        if(rx_data == 'h55 && recv_flag)
+            fifo_rdEn <= 1'b1;
+        
+        if(fifo_rdEn)
+            fifo_rdEn <= 1'b0;
+            
+    end
+  
+end 
+
+/******************* fifo ip end *****************/
 
 control  control_inst
 (
@@ -174,7 +206,7 @@ lcd_show_pic  lcd_show_pic_inst
     .init_done          (init_done), 
     .show_pic_data      (show_pic_data),   
     .en_write_show_pic  (en_write_show_pic),
-    .recv_flag          (recv_flag),
+    .fifo_wcnt          (fifo_wcnt),
     .recv_data          (rx_data)
 );
 
