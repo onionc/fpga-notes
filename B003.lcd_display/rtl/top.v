@@ -16,14 +16,14 @@
 // V1.1     |2023/10/30   |Initial ver
 // --------------------------------------------------------------------
 
-module  top #( //驱动lcd时调�
-     parameter   TIME100MS    = 23'd1,  //23'd5000_000  // 一个clk的时间足�
+module  top #( //驱动lcd时调用
+     parameter   TIME100MS    = 23'd1,  //23'd5000_000  // 一个clk的时间足够
                  TIME120MS    = 23'd1,  //23'd6000_000  
                  TIME150MS    = 23'd1,  //23'd7500_000  
                  TIMES4MAX    = 18'd153_613 ,  //320*240*2+13（设置窗口大小）=153_613   
                  DATA_IDLE    = 9'b0_0000_0000,
-                 BPS_PARAM_TX    = 'd12, // 发送波特率�2M/1250=9600
-                 BPS_PARAM_RX    = 'd12  // 接收波特�
+                 BPS_PARAM_TX    = 'd12, // 发送波特率：12M/1250=9600
+                 BPS_PARAM_RX    = 'd12  // 接收波特率
  )
 (
     input               clk            ,
@@ -39,7 +39,7 @@ module  top #( //驱动lcd时调�
 
     // uart
     input               ttl_rx,      // 串口接收信号
-    output              ttl_tx_o    // 串口发送信�
+    output              ttl_tx_o    // 串口发送信号
 
 
 );
@@ -108,8 +108,8 @@ wire fifo_rdEn;
 /******************* UART start *******************/
 // UART 接受模块配置
 wire    bps_en_rx; // 接收使能
-wire    bps_clk_rx; // 时钟传�
-wire     [7:0]   rx_data; // 接受的数�
+wire    bps_clk_rx; // 时钟传递
+wire     [7:0]   rx_data; // 接受的数据
 
 baud #(
     .BPS_PARAM(BPS_PARAM_RX) // 12M/1250=9600
@@ -129,7 +129,7 @@ uart_rx uart_rx_inst(
     .rx_data(rx_data)
 );
 
-// UART 发送模块配�
+// UART 发送模块配置
 wire    bps_en_tx;
 wire    bps_clk_tx;
 wire recv_flag;
