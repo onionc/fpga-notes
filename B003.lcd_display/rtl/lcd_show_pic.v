@@ -12,7 +12,7 @@ module lcd_show_pic
     output      wire            show_pic_done,
     output      wire            en_write_show_pic ,
 
-    input       wire            recv_flag, // 接受数据标志 
+    input       wire            fifo_wcnt, // fifo 数据长度标志
     input       wire    [7:0]   recv_data // 接收的数据
 );
 
@@ -35,8 +35,7 @@ parameter   WHITE   = 16'hFFFF,
 //****************** Parameter and Internal Signal *******************//
 
 
-//parameter   SIZE_WIDTH_MAX = 8'd240;
-parameter   SIZE_WIDTH_MAX = 8'd20;
+parameter   SIZE_WIDTH_MAX = 8'd240;
 parameter   SIZE_LENGTH_MAX = 9'd320;
 parameter   SIZE_WIDTH2_MAX = {SIZE_WIDTH_MAX, 1'b0} -1;
 
@@ -116,13 +115,16 @@ always@(posedge sys_clk or negedge sys_rst_n)
 
 //等待rom数据读取完成的计数器
 always@(posedge sys_clk or negedge sys_rst_n)
-    if(!sys_rst_n || length_num_flag)  begin
+    if(!sys_rst_n)  begin
         cnt_rom_prepare <= 'd0;
         temp <= 16'd0;
         cnt_wr_color_data <= 'd0;
-    end
-    else if(state == STATE2 && cnt_rom_prepare < 'd2) begin
-        if(recv_flag) begin
+    end else if(length_num_flag) begin
+        cnt_rom_prepare <= 'd0;
+        temp <= 16'd0;
+        cnt_wr_color_data <= 'd0;
+    end else if(state == STATE2 && cnt_rom_prepare < 'd2) begin
+        if(fifo_wcnt > 'd2) begin
             cnt_rom_prepare <= cnt_rom_prepare + 1'b1;
             cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
             if(cnt_rom_prepare == 'd0)
