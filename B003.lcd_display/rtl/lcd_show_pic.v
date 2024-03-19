@@ -40,10 +40,11 @@ parameter   SIZE_WIDTH_MAX = 8'd240;
 parameter   SIZE_LENGTH_MAX = 9'd320;
 parameter   SIZE_WIDTH2_MAX = {SIZE_WIDTH_MAX, 1'b0} -1;
 
-parameter   STATE0 = 4'b0_001;     
-parameter   STATE1 = 4'b0_010;
-parameter   STATE2 = 4'b0_100;
-parameter   DONE   = 4'b1_000;
+parameter   STATE0 =        'b0000_0001;     
+parameter   STATE1 =        'b0000_0010;
+parameter   STATE_WR_DONE = 'b0000_0100;
+parameter   STATE2 =        'b0000_1000;
+parameter   DONE   =        'b0001_0000;
 
 
 
@@ -57,7 +58,7 @@ reg     [3:0]   cnt_set_windows;
 reg            state1_finish_flag;
 
 //等待rom数据读取完成的计数器
-reg     [2:0]   cnt_rom_prepare;
+reg     [3:0]   cnt_rom_prepare;
 // 之前是从0~5计数，读取rom的值，现在变为从串口读数
 
 //rom的地址
@@ -92,26 +93,19 @@ always@(posedge sys_clk or negedge sys_rst_n)
     else
         case(state)
             STATE0 : state <= (init_done) ? STATE1 : STATE0;
-            STATE1 : state <= (state1_finish_flag) ? STATE2 : STATE1;
+            STATE1 : state <= (state1_finish_flag) ? STATE_WR_DONE : STATE1; // STATE1之后
+            STATE_WR_DONE : state <= (wr_done) ? STATE2 : STATE_WR_DONE;
+            
             STATE2 : begin
-                if(state2_finish_flag)
+                if(state2_finish_flag) // 结束则DONE
                     state <= DONE;
-                else if(cnt_rom_prepare >= 'd6)
-                    state <= STATE1;
-                else
-                    state <= STATE2;
+                else if(cnt_rom_prepare >= 'd10) // 发送一次数据后等待WR_DONE
+                    state <= STATE_WR_DONE;
+                else    state <= STATE2;
             end
             DONE   : state <= STATE0;
         endcase
-/*
-        
-//设置显示窗口计数器
-always@(posedge sys_clk or negedge sys_rst_n)
-    if(!sys_rst_n)  
-        cnt_set_windows <= 'd0;
-    else if(state == STATE1 && wr_done)
-        cnt_set_windows <= cnt_set_windows + 1'b1;
-*/
+
 //状态STATE1跳转到STATE2的标志信号
 always@(posedge sys_clk or negedge sys_rst_n)
     if(!sys_rst_n)
@@ -132,9 +126,11 @@ always@(posedge sys_clk or negedge sys_rst_n)
         cnt_rom_prepare <= 'd0;
         temp <= 16'heeee;
         cnt_wr_color_data <= 'd0;
-    end else if(state == STATE2 && cnt_rom_prepare <= 'd6) begin
+    end else if(state == STATE2 && cnt_rom_prepare < 'd10) begin
         if(fifo_wcnt >= 'd2) begin
+            
             cnt_rom_prepare <= cnt_rom_prepare + 1'b1;
+        
             case(cnt_rom_prepare)
                 'd0:  fifo_rdEn <= 1'b1;
                 'd1:  fifo_rdEn <= 1'b0;
@@ -142,17 +138,19 @@ always@(posedge sys_clk or negedge sys_rst_n)
                     temp <=  {temp[15:8], fifo_data};
                     cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
                 end
-                'd3:  fifo_rdEn <= 1'b1;
-                'd4:  fifo_rdEn <= 1'b0;
-                'd5:  begin
+                // 再等待3周期
+                'd5:  fifo_rdEn <= 1'b1; 
+                'd6:  fifo_rdEn <= 1'b0;
+                'd7:  begin
                     temp <= {fifo_data, temp[7:0]};
                     cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
+                //'d10:
+                    // 等待3周期读取下一波
                 end
                 default: fifo_rdEn <= 1'b0;
             endcase
         end 
-            
-    end else if(cnt_rom_prepare >= 'd7)
+    end else  if(cnt_rom_prepare >= 'd10)
         cnt_rom_prepare <= 'd0;
         
 
@@ -227,7 +225,7 @@ assign state2_finish_flag = ( (cnt_length_num == SIZE_LENGTH_MAX-1)  && length_n
         
 //输出端口
 assign show_pic_data = data;
-assign en_write_show_pic = (state == STATE1/* || cnt_rom_prepare == 'd6*/) ? 1'b1 : 1'b0;
+assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd10) ? 1'b1 : 1'b0;
 assign show_pic_done = (state == DONE) ? 1'b1 : 1'b0;
 
 
