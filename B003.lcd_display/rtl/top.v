@@ -150,9 +150,9 @@ uart_tx uart_tx_inst(
     .rst_n(rst_n),
     .bps_en_o(bps_en_tx),
     .bps_clk(bps_clk_tx),
-    .tx_data(fifo_wcnt),
+    .tx_data(show_pic_data[7:0]),
     .ttl_tx_o(ttl_tx_o),
-    .recv_flag(recv_flag)
+    .recv_flag(en_write_show_pic)
 );
 /******************* UART end   *******************/
 
