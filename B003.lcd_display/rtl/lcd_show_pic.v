@@ -67,6 +67,7 @@ wire    [15:0]   rom_q;
 
 //rom输出数据移位后得到的数据temp
 reg     [15:0]   temp;
+reg     [7:0]   temp2;
 
 //长度加1标志信号
 reg             length_num_flag;
@@ -99,7 +100,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
             STATE2 : begin
                 if(state2_finish_flag) // 结束则DONE
                     state <= DONE;
-                else if(cnt_rom_prepare >= 'd10) // 发送一次数据后等待WR_DONE
+                else if(cnt_rom_prepare >= 'd5) // 发送一次数据后等待WR_DONE
                     state <= STATE_WR_DONE;
                 else    state <= STATE2;
             end
@@ -126,7 +127,7 @@ always@(posedge sys_clk or negedge sys_rst_n)
         cnt_rom_prepare <= 'd0;
         temp <= 16'heeee;
         cnt_wr_color_data <= 'd0;
-    end else if(state == STATE2 && cnt_rom_prepare < 'd10) begin
+    end else if(state == STATE2 && cnt_rom_prepare < 'd5) begin
         if(fifo_wcnt >= 'd2) begin
             
             cnt_rom_prepare <= cnt_rom_prepare + 1'b1;
@@ -135,22 +136,16 @@ always@(posedge sys_clk or negedge sys_rst_n)
                 'd0:  fifo_rdEn <= 1'b1;
                 'd1:  fifo_rdEn <= 1'b0;
                 'd2:  begin
-                    temp <=  {temp[15:8], fifo_data};
+                    temp2 <= fifo_data;
                     cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
                 end
-                // 再等待3周期
-                'd5:  fifo_rdEn <= 1'b1; 
-                'd6:  fifo_rdEn <= 1'b0;
-                'd7:  begin
-                    temp <= {fifo_data, temp[7:0]};
-                    cnt_wr_color_data <= cnt_wr_color_data + 1'b1;
-                //'d10:
-                    // 等待3周期读取下一波
-                end
+                // 再等待3周期 d5
+               
+                
                 default: fifo_rdEn <= 1'b0;
             endcase
         end 
-    end else  if(cnt_rom_prepare >= 'd10)
+    end else  if(cnt_rom_prepare >= 'd5)
         cnt_rom_prepare <= 'd0;
         
 
@@ -211,10 +206,8 @@ always@(posedge sys_clk or negedge sys_rst_n)
         // init中设置过大小了，这里不再设置了。直接执行内存写入。每次就都默认全屏数据
         data <= 9'h02C;
     else if(state == STATE2)
-        if(cnt_wr_color_data[0] == 1'b0 )
-data <= {1'b1,temp[15:8]};
-        else
-            data <= {1'b1,temp[7:0]};
+
+        data <= {1'b1, temp2};
             
 
     else
@@ -225,7 +218,7 @@ assign state2_finish_flag = ( (cnt_length_num == SIZE_LENGTH_MAX-1)  && length_n
         
 //输出端口
 assign show_pic_data = data;
-assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd10) ? 1'b1 : 1'b0;
+assign en_write_show_pic = (state == STATE1 || cnt_rom_prepare == 'd5) ? 1'b1 : 1'b0;
 assign show_pic_done = (state == DONE) ? 1'b1 : 1'b0;
 
 
