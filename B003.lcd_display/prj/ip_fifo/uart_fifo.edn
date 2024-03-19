@@ -4,7 +4,7 @@
   (keywordMap (keywordLevel 0))
   (status
     (written
-      (timestamp 2024 3 18 14 34 14)
+      (timestamp 2024 3 19 17 0 16)
       (program "SCUBA" (version "Diamond (64-bit) 3.13.0.56.2"))))
       (comment "D:\Software\lattice_diamond\diamond\3.13\ispfpga\bin\nt64\scuba.exe -w -n uart_fifo -lang verilog -synth lse -bus_exp 7 -bb -arch xo2c00 -type ebfifo -depth 1024 -width 8 -rwidth 8 -pfu_fifo -no_enable -pe 10 -pf 508 -rfill -fill ")
   (library ORCLIB

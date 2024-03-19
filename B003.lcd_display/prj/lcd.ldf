@@ -30,7 +30,7 @@
         <Source name="../rtl/uart/uart_tx.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="ip_fifo/uart_fifo.v" type="Verilog" type_short="Verilog">
+        <Source name="ip_fifo/uart_fifo.ipx" type="IPX_Module" type_short="IPX">
             <Options/>
         </Source>
         <Source name="lcd.lpf" type="Logic Preference" type_short="LPF">

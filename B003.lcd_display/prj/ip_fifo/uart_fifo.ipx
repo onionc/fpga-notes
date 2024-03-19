@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<DiamondModule name="uart_fifo" module="FIFO_DC" VendorName="Lattice Semiconductor Corporation" generator="IPexpress" date="2024 03 18 14:34:16.592" version="5.8" type="Module" synthesis="lse" source_format="Verilog">
+<DiamondModule name="uart_fifo" module="uart_fifo" VendorName="Lattice Semiconductor Corporation" generator="IPexpress" date="2024 03 19 17:00:19.206" version="5.8" type="Module" synthesis="lse" source_format="Verilog HDL">
   <Package>
-		<File name="tb_uart_fifo_tmpl.v" type="testbench_verilog" modified="2024 03 18 14:34:14.841"/>
-		<File name="uart_fifo.lpc" type="lpc" modified="2024 03 18 14:34:14.721"/>
-		<File name="uart_fifo.v" type="top_level_verilog" modified="2024 03 18 14:34:14.839"/>
-		<File name="uart_fifo_tmpl.v" type="template_verilog" modified="2024 03 18 14:34:14.840"/>
+		<File name="tb_uart_fifo_tmpl.v" type="testbench_verilog" modified="2024 03 19 17:00:16.570"/>
+		<File name="uart_fifo.lpc" type="lpc" modified="2024 03 19 17:00:16.471"/>
+		<File name="uart_fifo.v" type="top_level_verilog" modified="2024 03 19 17:00:16.569"/>
+		<File name="uart_fifo_tmpl.v" type="template_verilog" modified="2024 03 19 17:00:16.570"/>
   </Package>
 </DiamondModule>
