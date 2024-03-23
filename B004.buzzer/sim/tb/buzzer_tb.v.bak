@@ -1,0 +1,26 @@
+
+module buzzer_tb;
+
+wire clk;
+wire rst_n;
+wire buzzer_oo;
+
+
+initial begin
+    rst_n <= 1'b0;
+    clk <= 1'b0;
+    #201
+    rst_n <= 1'b1;
+end
+always #1 clk<=~clk;
+
+
+
+top top_inst(
+    clk(clk),
+    rst_n(rst_n),
+    buzzer_o(buzzer_oo)
+);
+
+
+endmodule
