@@ -12,7 +12,7 @@ module  top
 );
 
 
-wire buzzer_en=1'b1;
+reg buzzer_en;
 
 reg [23:0] cnt;
 parameter CNT_MAX = 12_000_000;
@@ -40,7 +40,16 @@ always @(posedge clk or negedge rst_n) begin
     else
         tone <= tone;
 end
-
+// 使能，每秒开始重新使能
+always @(posedge clk or negedge rst_n)
+    if(!rst_n)
+        buzzer_en <= 1'b0;
+    else if(cnt == 1'b0)
+        buzzer_en <= 1'b0;
+    else if(cnt == 1'b1)
+        buzzer_en <= 1'b1;
+    else
+        buzzer_en <= buzzer_en;
 
 buzzer buzzer_inst(
     .clk(clk),
