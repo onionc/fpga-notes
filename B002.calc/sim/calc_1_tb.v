@@ -22,9 +22,11 @@ wire [7:0] v2; // 操作数2
 
 reg [7:0] v_res; // 结果，还是只支持8位的结果
 // 计算后将结果再拆分
+/*
 wire [3:0] v_r1;
 wire [3:0] v_r2;
 wire neg;
+*/
 /*
 initial begin
     clk <= 1'b0; 
@@ -143,10 +145,15 @@ reg [7:0] A;
 reg [7:0] B;
 wire [15:0] res_mul;
 
+wire [3:0] v_r1, v_r2, v_r3, v_r4;
+wire neg2;
+
+
 
 initial begin
     A = 8'd1;
     B = -10;
+    clk = 0;
 
     #200
 
@@ -160,17 +167,36 @@ initial begin
     #200
     A = 8'b0;
     B = 8'd3;
+     #200
+    A = 8'd50;
+    B = 8'd50;
+     #200
+    A = 8'd51;
+    B = 8'd51;
 
     #200
     A = 8'd99;
     B = 8'd99;
 
 end
-
+always #(10) clk = ~clk;
 calc_mul calc_mul_inst_test(
     .A(A),
     .B(B),
     .out(res_mul)
+);
+
+reg [15:0] res_mul2;
+always @(posedge clk)
+    res_mul2 <= res_mul;
+// 再拆分
+num_split num_split_inst1(
+    .v(res_mul2),
+    .thd(v_r4),
+    .hud(v_r3),
+    .ten(v_r2),
+    .one(v_r1),
+    .neg(neg2)
 );
 
 endmodule
