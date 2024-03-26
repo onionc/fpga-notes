@@ -2,7 +2,7 @@
 <BaliProject version="3.2" title="calc" device="LCMXO2-4000HC-5MG132C" default_implementation="impl1">
     <Options/>
     <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">
-        <Options def_top="calc_mul" top="calc"/>
+        <Options def_top="calc" top="calc"/>
         <Source name="rtl/keyboard.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
