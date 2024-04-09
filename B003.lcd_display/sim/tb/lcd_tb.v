@@ -6,13 +6,13 @@ module lcd_td();
     reg rst_n;
 
 
-    // 屏幕
-    wire lcd_spi_sclk;    // spi 时钟
-    wire lcd_spi_mosi;    // spi 数据输出
-    wire lcd_spi_cs;    // spi 使能接口
-    wire lcd_dc;          // spi 数据/命令
-    wire lcd_reset;       // 复位
-    wire lcd_blk;         // 背光
+    // 灞忓箷
+    wire lcd_spi_sclk;    // spi 鏃堕挓
+    wire lcd_spi_mosi;    // spi 鏁版嵁杈撳嚭
+    wire lcd_spi_cs;    // spi 浣胯兘鎺ュ彛
+    wire lcd_dc;          // spi 鏁版嵁/鍛戒护
+    wire lcd_reset;       // 澶嶄綅
+    wire lcd_blk;         // 鑳屽厜
 
     parameter CLK_CNT = 5'd20;
 
@@ -36,13 +36,13 @@ module lcd_td();
         .clk(clk),
         .rst_n(rst_n),
 
-        // 屏幕
-        .lcd_spi_sclk(lcd_spi_sclk),    // spi 时钟
-        .lcd_spi_mosi(lcd_spi_mosi),    // spi 数据输出
-        .lcd_spi_cs(lcd_spi_cs),      // spi 使能接口
-        .lcd_dc(lcd_dc),          // spi 数据/命令
-        .lcd_reset(lcd_reset),       // 复位
-        .lcd_blk(lcd_blk)         // 背光
+        // 灞忓箷
+        .lcd_spi_sclk(lcd_spi_sclk),    // spi 鏃堕挓
+        .lcd_spi_mosi(lcd_spi_mosi),    // spi 鏁版嵁杈撳嚭
+        .lcd_spi_cs(lcd_spi_cs),      // spi 浣胯兘鎺ュ彛
+        .lcd_dc(lcd_dc),          // spi 鏁版嵁/鍛戒护
+        .lcd_reset(lcd_reset),       // 澶嶄綅
+        .lcd_blk(lcd_blk)         // 鑳屽厜
     );
 
 
