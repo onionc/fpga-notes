@@ -1,4 +1,4 @@
-# Fpge笔记
+# Fpga笔记
 
 学习和使用 Fpga 的记录。
 
@@ -18,4 +18,8 @@ B前缀是使用小脚丫FPGA （StepFpga）工程
 - B003.lcd_display lcd显示，主要模块有：SPI驱动，LCD显示，串口
 - B004.buzzer 蜂鸣器
 - B005.signal_gen 波形生成，主要模块：DAC驱动
+
+
+
+- T001.PL_template 基于TCL脚本创建的带版本管理的PL端项目模板，（带版本控制的vivado项目）
 
