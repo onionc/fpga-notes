@@ -1,0 +1,18 @@
+
+# 忽略所有
+/hw/*
+/PL_prj/*
+/PS_app/*
+!.gitignore
+
+### 排除
+# PL
+!/PL_prj/src/
+!/PL_prj/build.bat
+!/PL_prj/build.tcl
+# PS
+!/PS_app/auto_create_vitis/
+# hw
+!/hw/design_1_wrapper.xsa
+
+
